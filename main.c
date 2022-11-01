@@ -257,9 +257,13 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                         }
                     }
                 }
-                for (int z = 0; z < player->nbpropriete; z++)
+                
+            }
+        }
+        for (int z = 0; z < player->nbpropriete; z++)
                 {
-                    if (timer - player->propriete[z].marqueur >= 15000)
+                    printf("%d : %d \n",z,player->propriete[z].marqueur);
+                    if (timer - player->propriete[z].marqueur >= 15000 &&timer - player->propriete[z].marqueur <= 15100 && player->propriete[z].niveau<4)
                     {
                         player->propriete[z].habitant=batiment[player->propriete[z].niveau+1].habitant;
                         player->propriete[z].niveau+=1;
@@ -275,8 +279,6 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                         marqueur = timer;
                         minutes += 1;
                     }
-            }
-        }
         textprintf_centre_ex(page, font, 500, 300, makecol(255, 255, 255), -1, "%d - %d", case_actu.x1, case_actu.y1);
         blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
         clear(page);
