@@ -137,7 +137,7 @@ t_case detecterCase(t_case **plateau)
         {
             casechoisie_x = xsouris;
             casechoisie_y = ysouris;
-            casecliquee = plateau[casechoisie_x][casechoisie_y];
+            casecliquee = plateau[casechoisie_y][casechoisie_x];
             return casecliquee;
         }
     }
@@ -148,9 +148,9 @@ void initcase(t_case **plateau)
 {
 
     int depx1 = 0, depx2 = 20, depy1 = 0, depy2 = 20;
-    for (int i = 0; i < 45; i++)
+    for (int i = 0; i < 35; i++)
     {
-        for (int j = 0; j < 35; j++)
+        for (int j = 0; j < 45; j++)
         {
             plateau[i][j].x1 = depx1;
             depx1 += 20;
@@ -171,9 +171,9 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
 
     t_case case_actu;
     t_case **plateau;
-    plateau = (t_case **)calloc(45, sizeof(t_case *));
-    for (int i = 0; i < 45; i++)
-        plateau[i] = calloc(35, sizeof(t_case));
+    plateau = (t_case **)calloc(35, sizeof(t_case *));
+    for (int i = 0; i < 35; i++)
+        plateau[i] = calloc(45, sizeof(t_case));
     initcase(plateau);
     install_mouse();
     install_timer();
