@@ -63,5 +63,9 @@ typedef struct joueur{
 
 }t_joueur;
 
+typedef struct pol{
+    int x1,x2,y1,y2;
+}t_case;
+
 
 #endif // BIBLIO_H_INCLUDED
