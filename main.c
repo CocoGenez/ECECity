@@ -137,7 +137,7 @@ t_case detecterCase(t_case **plateau)
         {
             casechoisie_x = xsouris;
             casechoisie_y = ysouris;
-            casecliquee = plateau[casechoisie_x][casechoisie_y];
+            casecliquee = plateau[casechoisie_y][casechoisie_x];
             return casecliquee;
         }
     }
@@ -148,9 +148,9 @@ void initcase(t_case **plateau)
 {
 
     int depx1 = 0, depx2 = 20, depy1 = 0, depy2 = 20;
-    for (int i = 0; i < 45; i++)
+    for (int i = 0; i < 35; i++)
     {
-        for (int j = 0; j < 35; j++)
+        for (int j = 0; j < 45; j++)
         {
             plateau[i][j].x1 = depx1;
             depx1 += 20;
@@ -166,53 +166,118 @@ void initcase(t_case **plateau)
     }
 }
 
-void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur player)
+void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur *player)
 {
 
+    BITMAP *iconbat;
+    iconbat = load_bitmap("cabane.bmp", NULL);
     t_case case_actu;
     t_case **plateau;
-    plateau = (t_case **)calloc(45, sizeof(t_case *));
-    for (int i = 0; i < 45; i++)
-        plateau[i] = calloc(35, sizeof(t_case));
+    plateau = (t_case **)calloc(35, sizeof(t_case *));
+    for (int i = 0; i < 35; i++)
+        plateau[i] = calloc(45, sizeof(t_case));
     initcase(plateau);
     install_mouse();
     install_timer();
     show_mouse(screen);
 
-    player.argent = 500000;
-    player.nbhabitant = 0;
+    player->argent = 500000;
+    player->nbhabitant = 0;
 
     timer = 0;
     int minutes = 0;
+    int condi = 0;
     int marqueur = timer;
     LOCK_FUNCTION(incrementer_timer);
     LOCK_VARIABLE(timer);
     install_int_ex(incrementer_timer, MSEC_TO_TIMER(1));
+    printf("yo");
 
     while (!key[KEY_ESC])
     {
+        rectfill(detection, 0, 540, 60, 600, makecol(254, 0, 0));
+        int couleurpixel;
+        blit(iconbat, page, 0, 0, 0, 540, SCREEN_W, SCREEN_H);
         textprintf_centre_ex(page, font, SCREEN_W / 2 - 25, 10, makecol(255, 255, 255), -1, "%d :", minutes);
         textprintf_centre_ex(page, font, SCREEN_W / 2, 10, makecol(255, 255, 255), -1, "%d", timer / 1000);
-        textprintf_centre_ex(page, font, 100, 50, makecol(255, 255, 255), -1, "%d ECEflouz", player.argent);
-        textprintf_centre_ex(page, font, 500, 50, makecol(255, 255, 255), -1, "%d", player.nbhabitant);
+        textprintf_centre_ex(page, font, 100, 50, makecol(255, 255, 255), -1, "%d ECEflouz", player->argent);
+        textprintf_centre_ex(page, font, 500, 50, makecol(255, 255, 255), -1, "%d", player->nbhabitant);
         textprintf_centre_ex(page, font, 100, 500, makecol(255, 255, 255), -1, "souris : %d %d", mouse_x, mouse_y);
-        case_actu = detecterCase(plateau);
+
+        condi = 0;
+        
+        if (mouse_b == 2)
+        {
+            couleurpixel = getpixel(detection, mouse_x, mouse_y);
+            if (getr(couleurpixel) == 254 && getg(couleurpixel) == 0 && getb(couleurpixel) == 0)
+            {
+
+                while (condi == 0)
+                {
+                    case_actu.x1 = 0;
+                    case_actu = detecterCase(plateau);
+                    if (case_actu.x1 != 0)
+                        condi = 1;
+                }
+                player->argent -= 1000;
+                
+
+                t_bat new;
+                new.x1 = case_actu.x1;
+                new.x2 = case_actu.x2;
+                new.y1 = case_actu.y1; // intialisation nouvelle case
+                new.y2 = case_actu.y2;
+                strcpy(new.nom, batiment[0].nom);
+                new.prix = batiment[0].prix,
+                new.niveau=0;
+                new.habitant = batiment[0].habitant;
+                // printf("%d", player->propriete[0].prix);
+                if (player->propriete[0].prix != 1000)
+                {
+                    player->propriete[0] = new;
+                    player->nbpropriete=1;
+                    player->propriete[0].marqueur = timer;
+                    printf("%d", player->propriete[0].x1);
+                }
+                else if (player->propriete[0].prix == 1000)
+                {
+                    for (int i = 0; i < 30; i++)
+                    {
+
+                        if (player->propriete[i].prix != 1000)
+                        { // condition verifiant si la propriete existe deja
+                            t_bat *temp;
+                            temp = player->propriete;
+                            player->nbpropriete+=1;
+                            player->propriete = (t_bat *)malloc(i * sizeof(t_bat));
+                            player->propriete = temp;
+                            player->propriete[i] = new;
+                            player->propriete[i].marqueur = timer;
+                            i = 32;
+                        }
+                    }
+                }
+                for (int z = 0; z < player->nbpropriete; z++)
+                {
+                    if (timer - player->propriete[z].marqueur >= 15000)
+                    {
+                        player->propriete[z].habitant=batiment[player->propriete[z].niveau+1].habitant;
+                        player->propriete[z].niveau+=1;
+                        player->nbhabitant+=(batiment[player->propriete[z].niveau+1].habitant-batiment[player->propriete[z].niveau].habitant);
+                        marqueur = timer;
+                    }
+                    
+                }
+                if (timer >= 60000)
+                    {
+                       
+                        timer = 0;
+                        marqueur = timer;
+                        minutes += 1;
+                    }
+            }
+        }
         textprintf_centre_ex(page, font, 500, 300, makecol(255, 255, 255), -1, "%d - %d", case_actu.x1, case_actu.y1);
-
-        if (timer - marqueur >= 15000)
-        {
-            player.argent -= 1000;
-            marqueur = timer;
-        }
-        if (timer >= 60000)
-        {
-            player.nbhabitant += 100;
-            player.argent -= 1000;
-            timer = 0;
-            marqueur = timer;
-            minutes += 1;
-        }
-
         blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
         clear(page);
     }
@@ -230,8 +295,9 @@ int main()
     batiment = (t_bat *)malloc(5 * sizeof(t_bat));
     t_graphe *reseau;
     reseau = (t_graphe *)malloc(1 * sizeof(t_graphe));
-    t_joueur player;
-
+    t_joueur *player;
+    player = (t_joueur *)malloc(1 * sizeof(t_joueur));
+    player->propriete = (t_bat *)malloc(1 * sizeof(t_bat));
     allegro_init();
     install_keyboard();
     install_mouse();
@@ -280,7 +346,9 @@ int main()
         if (modedejeu == 1)
         {
             // CAPITALISTE
+
             init_structure(batiment, reseau);
+
             mode_capitaliste(page, detection, batiment, player);
         }
         else if (modedejeu == 2)

@@ -38,9 +38,12 @@ typedef struct batiment{
     int x2;
     int y1;
     int y2;
+    int niveau;
+    int marqueur;
     int prix;
     int habitant;
     char nom[20];
+    BITMAP* icone;
     struct eau water;
     struct electricite elec;
     struct route road;
@@ -58,8 +61,9 @@ typedef struct Graphe{
 typedef struct joueur{
 
     int argent;
-    struct batiment* propriete;
+    t_bat* propriete;
     int nbhabitant;
+    int nbpropriete;
 
 }t_joueur;
 
