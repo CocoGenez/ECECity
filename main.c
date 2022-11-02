@@ -10,11 +10,12 @@ void incrementer_timer()
 }
 END_OF_FUNCTION(incrementer_timer)
 
-int menu(BITMAP *page, BITMAP *detection)
+int menu(BITMAP *page, BITMAP *detection,BITMAP* accueil)
 {
     install_mouse();
     show_mouse(screen);
-
+    clear_bitmap(detection);
+    clear_bitmap(page);
     rectfill(detection, 251, 479, 773, 545, makecol(255, 0, 0)); // NEW PARTIE
     rectfill(detection, 251, 559, 773, 625, makecol(0, 255, 0)); // CHARGER
     rectfill(detection, 251, 638, 773, 704, makecol(0, 0, 255)); // QUITTER
@@ -23,14 +24,16 @@ int menu(BITMAP *page, BITMAP *detection)
     int couleurpixel;
     while (!key[KEY_ESC])
     {
+        blit(accueil, page, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
         blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+       
 
         if (mouse_b == 1)
         {
             couleurpixel = getpixel(detection, mouse_x, mouse_y);
             if (getr(couleurpixel) == 255 && getg(couleurpixel) == 0 && getb(couleurpixel) == 0)
             {
-                modedejeu = nouvellepartie(page, detection);
+                modedejeu = nouvellepartie(page, detection,accueil);
                 return modedejeu;
             }
             if (getr(couleurpixel) == 0 && getg(couleurpixel) == 255 && getb(couleurpixel) == 0)
@@ -46,31 +49,60 @@ int menu(BITMAP *page, BITMAP *detection)
     }
 }
 
-int nouvellepartie(BITMAP *page, BITMAP *detection)
+int nouvellepartie(BITMAP *page, BITMAP *detection,BITMAP* accueil)
 {
 
     clear_bitmap(detection);
-    // clear_bitmap(page);
+    clear_bitmap(page);
+    BITMAP *gamemode;
+    BITMAP *capita;
+    BITMAP *commu;
+    capita = load_bitmap("capitaliste_selected.bmp", NULL);
+    commu = load_bitmap("communiste_selected.bmp", NULL);
+    gamemode = load_bitmap("gamemode.bmp", NULL);
+    blit(gamemode, page, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
     install_mouse();
     show_mouse(screen);
-    rectfill(detection, 251, 479, 773, 545, makecol(255, 0, 0)); // CAPITALISTE
-    rectfill(detection, 251, 559, 773, 625, makecol(0, 255, 0)); // COMMUNISTE
+
+    
+    rectfill(detection, 345, 459, 720, 496, makecol(255, 0, 0)); // CAPITALISTE
+    rectfill(detection, 345, 505, 720, 549, makecol(0, 255, 0)); // COMMUNISTE
+    rectfill(detection, 519, 576, 701, 620, makecol(254, 245, 0));
+    rectfill(detection, 319, 576, 501, 620, makecol(0, 0, 254));
     int modedejeu;
     int couleurpixel;
+    int matthieu = 0;
     while (!key[KEY_ESC])
     {
+        //blit(detection,screen,0,0,0,0,SCREEN_W,SCREEN_H);
         blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
         if (mouse_b == 2)
         {
             couleurpixel = getpixel(detection, mouse_x, mouse_y);
             if (getr(couleurpixel) == 255 && getg(couleurpixel) == 0 && getb(couleurpixel) == 0)
             {
-                return modedejeu = 1;
+                clear_bitmap(page);
+                blit(gamemode, page, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+                blit(capita, page, 0, 0, 299, 451, SCREEN_W, SCREEN_H);
+                modedejeu = 1;
             }
             if (getr(couleurpixel) == 0 && getg(couleurpixel) == 255 && getb(couleurpixel) == 0)
             {
-                return modedejeu = 2;
+                clear_bitmap(page);
+                blit(gamemode, page, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+                blit(commu, page, 0, 0, 299, 497, SCREEN_W, SCREEN_H);
+                modedejeu = 2;
+            }
+
+            if (getr(couleurpixel) == 254 && getg(couleurpixel) == 245 && getb(couleurpixel) == 0)
+            {
+                return modedejeu;
+            }
+
+            if (getr(couleurpixel) == 0 && getg(couleurpixel) == 0 && getb(couleurpixel) == 254)
+            {
+                menu(page, detection,accueil);
             }
         }
     }
@@ -205,7 +237,7 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
         textprintf_centre_ex(page, font, 100, 500, makecol(255, 255, 255), -1, "souris : %d %d", mouse_x, mouse_y);
 
         condi = 0;
-        
+
         if (mouse_b == 2)
         {
             couleurpixel = getpixel(detection, mouse_x, mouse_y);
@@ -220,7 +252,6 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                         condi = 1;
                 }
                 player->argent -= 1000;
-                
 
                 t_bat new;
                 new.x1 = case_actu.x1;
@@ -229,13 +260,13 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                 new.y2 = case_actu.y2;
                 strcpy(new.nom, batiment[0].nom);
                 new.prix = batiment[0].prix,
-                new.niveau=0;
+                new.niveau = 0;
                 new.habitant = batiment[0].habitant;
                 // printf("%d", player->propriete[0].prix);
                 if (player->propriete[0].prix != 1000)
                 {
                     player->propriete[0] = new;
-                    player->nbpropriete=1;
+                    player->nbpropriete = 1;
                     player->propriete[0].marqueur = timer;
                     printf("%d", player->propriete[0].x1);
                 }
@@ -248,7 +279,7 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                         { // condition verifiant si la propriete existe deja
                             t_bat *temp;
                             temp = player->propriete;
-                            player->nbpropriete+=1;
+                            player->nbpropriete += 1;
                             player->propriete = (t_bat *)malloc(i * sizeof(t_bat));
                             player->propriete = temp;
                             player->propriete[i] = new;
@@ -257,28 +288,26 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                         }
                     }
                 }
-                
             }
         }
         for (int z = 0; z < player->nbpropriete; z++)
-                {
-                    printf("%d : %d \n",z,player->propriete[z].marqueur);
-                    if (timer - player->propriete[z].marqueur >= 15000 &&timer - player->propriete[z].marqueur <= 15100 && player->propriete[z].niveau<4)
-                    {
-                        player->propriete[z].habitant=batiment[player->propriete[z].niveau+1].habitant;
-                        player->propriete[z].niveau+=1;
-                        player->nbhabitant+=(batiment[player->propriete[z].niveau+1].habitant-batiment[player->propriete[z].niveau].habitant);
-                        marqueur = timer;
-                    }
-                    
-                }
-                if (timer >= 60000)
-                    {
-                       
-                        timer = 0;
-                        marqueur = timer;
-                        minutes += 1;
-                    }
+        {
+            printf("%d : %d \n", z, player->propriete[z].marqueur);
+            if (timer - player->propriete[z].marqueur >= 15000 && timer - player->propriete[z].marqueur <= 15100 && player->propriete[z].niveau < 4)
+            {
+                player->propriete[z].habitant = batiment[player->propriete[z].niveau + 1].habitant;
+                player->propriete[z].niveau += 1;
+                player->nbhabitant += (batiment[player->propriete[z].niveau + 1].habitant - batiment[player->propriete[z].niveau].habitant);
+                marqueur = timer;
+            }
+        }
+        if (timer >= 60000)
+        {
+
+            timer = 0;
+            marqueur = timer;
+            minutes += 1;
+        }
         textprintf_centre_ex(page, font, 500, 300, makecol(255, 255, 255), -1, "%d - %d", case_actu.x1, case_actu.y1);
         blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
         clear(page);
@@ -336,7 +365,7 @@ int main()
         show_mouse(screen);
         while (modedejeu == 0)
         {
-            modedejeu = menu(page, detection);
+            modedejeu = menu(page, detection,accueil);
         }
 
         clear_bitmap(detection);
