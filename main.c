@@ -198,10 +198,11 @@ void initcase(t_case **plateau)
     }
 }
 
-void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur *player)
+void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur *player,BITMAP* map)
 {
 
     BITMAP *iconbat;
+    player->nbhabitant=0;
     iconbat = load_bitmap("cabane.bmp", NULL);
     t_case case_actu;
     t_case **plateau;
@@ -229,11 +230,12 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
     {
         rectfill(detection, 0, 540, 60, 600, makecol(254, 0, 0));
         int couleurpixel;
+        blit(map,page,0,0,0,0,SCREEN_W,SCREEN_H);
         blit(iconbat, page, 0, 0, 0, 540, SCREEN_W, SCREEN_H);
-        textprintf_centre_ex(page, font, SCREEN_W / 2 - 25, 10, makecol(255, 255, 255), -1, "%d :", minutes);
-        textprintf_centre_ex(page, font, SCREEN_W / 2, 10, makecol(255, 255, 255), -1, "%d", timer / 1000);
-        textprintf_centre_ex(page, font, 100, 50, makecol(255, 255, 255), -1, "%d ECEflouz", player->argent);
-        textprintf_centre_ex(page, font, 500, 50, makecol(255, 255, 255), -1, "%d", player->nbhabitant);
+        textprintf_centre_ex(page, font, 930, 726, makecol(0, 0, 0), -1, "%d :", minutes);
+        textprintf_centre_ex(page, font, 960, 726, makecol(0, 0 ,0), -1, "%d", timer / 1000);
+        textprintf_centre_ex(page, font, 750, 726, makecol(0, 0, 0), -1, "%d ECEflouz", player->argent);
+        textprintf_centre_ex(page, font, 250, 726, makecol(0, 0, 0), -1, "%d", player->nbhabitant);
         textprintf_centre_ex(page, font, 100, 500, makecol(255, 255, 255), -1, "souris : %d %d", mouse_x, mouse_y);
 
         condi = 0;
@@ -292,12 +294,14 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
         }
         for (int z = 0; z < player->nbpropriete; z++)
         {
-            printf("%d : %d \n", z, player->propriete[z].marqueur);
+            printf("%d : %d \n", z, player->propriete[z].niveau);
+            printf("%d : %d \n", z, batiment[player->propriete[z].niveau + 1].habitant-batiment[player->propriete[z].niveau].habitant);
+            //printf("%d : %d \n", z, batiment[player->propriete[z].niveau].habitant);
             if (timer - player->propriete[z].marqueur >= 15000 && timer - player->propriete[z].marqueur <= 15100 && player->propriete[z].niveau < 4)
             {
                 player->propriete[z].habitant = batiment[player->propriete[z].niveau + 1].habitant;
+                player->nbhabitant += batiment[player->propriete[z].niveau + 1].habitant - batiment[player->propriete[z].niveau].habitant;
                 player->propriete[z].niveau += 1;
-                player->nbhabitant += (batiment[player->propriete[z].niveau + 1].habitant - batiment[player->propriete[z].niveau].habitant);
                 marqueur = timer;
             }
         }
@@ -319,7 +323,7 @@ int main()
     BITMAP *page;
     BITMAP *detection;
     BITMAP *accueil;
-
+    BITMAP* map;
     int modedejeu = 0;
 
     t_bat *batiment;
@@ -346,6 +350,7 @@ int main()
     accueil = load_bitmap("home.bmp", NULL);
     detection = create_bitmap(SCREEN_W, SCREEN_H);
     page = create_bitmap(SCREEN_W, SCREEN_H);
+    map=load_bitmap("ingame.bmp",NULL);
     clear_bitmap(page);
 
     rectfill(detection, 251, 479, 773, 545, makecol(255, 0, 0)); // NEW PARTIE
@@ -380,12 +385,14 @@ int main()
 
             init_structure(batiment, reseau);
 
-            mode_capitaliste(page, detection, batiment, player);
+            mode_capitaliste(page, detection, batiment, player,map);
         }
         else if (modedejeu == 2)
         {
             // COMMUNISTE
             init_structure(batiment, reseau);
+            //mode_capitaliste(page, detection, batiment, player,map);
+        
         }
         else if (modedejeu == 3)
         {
