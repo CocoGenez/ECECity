@@ -1,0 +1,23 @@
+# depslib dependency file v1.0
+1667214116 source:c:\users\alexa\documents\codeblocks\youo\main.c
+	"biblio.h"
+	"stdio.h"
+	"stdlib.h"
+	"allegro.h"
+
+1667213331 c:\users\alexa\documents\codeblocks\youo\biblio.h
+	"stdio.h"
+	"stdlib.h"
+	"allegro.h"
+
+1667236645 source:c:\users\coren\onedrive\documents\algo\youo\main.c
+	"biblio.h"
+	"stdio.h"
+	"stdlib.h"
+	"allegro.h"
+
+1667236536 c:\users\coren\onedrive\documents\algo\youo\biblio.h
+	"stdio.h"
+	"stdlib.h"
+	"allegro.h"
+
