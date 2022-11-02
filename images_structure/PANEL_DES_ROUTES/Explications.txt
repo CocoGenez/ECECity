@@ -1,0 +1,85 @@
+Quand on clique sur l'icône "route" dans la barre à outils, ça affiche un panel qui permettra de choisir quel morceau de route construire.
+
+
+Coordonées à laquelle blit le panel :
+x = 124 et y = 100
+
+- 
+
+Coordonnées détection première ligne du panel :
+
+Premier virage :
+x1 = 148 et y1 = 124
+x2 = 188 et y2 = 164
+
+Deuxième virage :
+x1 = 201 et y1 = 124
+x2 = 241 et y2 = 164
+
+Troisème virage :
+x1 = 254 et y1 = 124
+x2 = 294 et y2 = 164
+
+Quatrième virage :
+x1 = 307 et y1 = 124
+x2 = 347 et y2 = 164
+
+------------
+
+Coordonnées détection deuxième ligne du panel :
+
+Première impasse :
+x1 = 148 et y1 = 173
+x2 = 188 et y2 = 213
+
+Deuxième virage :
+x1 = 201 et y1 = 173
+x2 = 241 et y2 = 213
+
+Troisème virage :
+x1 = 254 et y1 = 173
+x2 = 294 et y2 = 213
+
+Quatrième virage :
+x1 = 307 et y1 = 173
+x2 = 347 et y2 = 213
+
+------------
+
+Coordonnées détection troisième ligne du panel :
+
+Premier croisement :
+x1 = 148 et y1 = 224
+x2 = 188 et y2 = 264
+
+Deuxième croisement :
+x1 = 201 et y1 = 224
+x2 = 241 et y2 = 264
+
+Troisème croisement :
+x1 = 254 et y1 = 224
+x2 = 294 et y2 = 264
+
+Quatrième croisement :
+x1 = 307 et y1 = 224
+x2 = 347 et y2 = 264
+
+------------
+
+Coordonnées détection quatrième ligne du panel :
+
+Première route :
+x1 = 148 et y1 = 275
+x2 = 188 et y2 = 315
+
+Deuxième route :
+x1 = 201 et y1 = 275
+x2 = 241 et y2 = 315
+
+------------
+
+Coordonnées détection cinquième ligne du panel :
+
+Carrefour :
+x1 = 148 et y1 = 326
+x2 = 188 et y2 = 366
