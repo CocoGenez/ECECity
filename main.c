@@ -184,9 +184,9 @@ t_case detecterCase(t_case **plateau,BITMAP* page,BITMAP* batiment,BITMAP* map,t
     {
         xsouris = (mouse_x) / 20;
         ysouris = (mouse_y) / 20;
-        if (xsouris <= 44 && xsouris >= 0 && ysouris <= 34 && ysouris >= 0)
+        if (xsouris <= 50 && xsouris >= 6 && ysouris <= 34 && ysouris >= 0)
         {
-            casechoisie_x = xsouris;
+            casechoisie_x = xsouris-6;
             casechoisie_y = ysouris;
             casecliquee = plateau[casechoisie_y][casechoisie_x];
             return casecliquee;
@@ -198,7 +198,7 @@ t_case detecterCase(t_case **plateau,BITMAP* page,BITMAP* batiment,BITMAP* map,t
 void initcase(t_case **plateau)
 {
 
-    int depx1 = 0, depx2 = 20, depy1 = 0, depy2 = 20;
+    int depx1 = 124, depx2 = 20, depy1 = 0, depy2 = 20;
     for (int i = 0; i < 35; i++)
     {
         for (int j = 0; j < 45; j++)
@@ -210,7 +210,7 @@ void initcase(t_case **plateau)
             plateau[i][j].y1 = depy1;
             plateau[i][j].y2 = depy2;
         }
-        depx1 = 0;
+        depx1 = 124;
         depx2 = 20;
         depy1 += 20;
         depy2 += 20;
