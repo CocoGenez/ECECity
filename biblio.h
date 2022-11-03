@@ -11,7 +11,7 @@ typedef struct eau{
     int capacite;
     int prix;
     struct eau* next;
-
+    BITMAP* iconeeau;
 }t_eau;
 
 typedef struct electricite{
@@ -20,6 +20,7 @@ typedef struct electricite{
     int capacite;
     int prix;
     struct electricite* next;
+    BITMAP* iconeelec;
 
 }t_electricite;
 
@@ -29,6 +30,7 @@ typedef struct route{
     int y;
     int prix;
     struct route* next;
+    BITMAP* iconeroute;
 
 }t_route;
 
@@ -52,9 +54,12 @@ typedef struct batiment{
 
 typedef struct Graphe{
 
-    struct eau chateau;
-    struct electricite centrale;
-    struct route chaussee;
+    struct eau* chateau;
+    struct electricite* centrale;
+    struct route* chaussee;
+    BITMAP* water;
+    BITMAP* road;
+    BITMAP* elec;
 
 }t_graphe;
 
