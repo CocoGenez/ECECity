@@ -161,7 +161,6 @@ void init_structure(t_bat *batiment, t_graphe *reseau)
     reseau->chateau->prix = 100000;
     batiment->water.iconeeau=load_bitmap("images_structure/chateau_eau.bmp",NULL);
 
-
     reseau->chaussee->prix=10;
     
 
@@ -238,25 +237,26 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
 
     timer = 0;
     int minutes = 0;
+    int secondes = 0;
     int condi = 0;
     
-    int marqueur = timer;
+    int marqueur1 = timer;
+    int marqueur2 = timer;
     LOCK_FUNCTION(incrementer_timer);
     LOCK_VARIABLE(timer);
     install_int_ex(incrementer_timer, MSEC_TO_TIMER(1));
-    printf("yo");
 
     while (!key[KEY_ESC])
     {
         rectfill(detection, 24, 202, 101, 279, makecol(254, 0, 0)); //batiment
-        rectfill(detection, 24, 296, 101, 373, makecol(253, 0, 0));//chateau
-        rectfill(detection, 24, 390, 101, 467, makecol(252, 0, 0));//caserne
-        rectfill(detection, 24, 484, 101, 561, makecol(251, 0, 0));//centrale
+        rectfill(detection, 24, 296, 101, 373, makecol(253, 0, 0)); //chateau
+        rectfill(detection, 24, 390, 101, 467, makecol(252, 0, 0)); //caserne
+        rectfill(detection, 24, 484, 101, 561, makecol(251, 0, 0)); //centrale
 
         int couleurpixel;
         blit(map,page,0,0,0,0,SCREEN_W,SCREEN_H);
         textprintf_centre_ex(page, font, 930, 726, makecol(0, 0, 0), -1, "%d :", minutes);
-        textprintf_centre_ex(page, font, 960, 726, makecol(0, 0 ,0), -1, "%d", timer / 1000);
+        textprintf_centre_ex(page, font, 960, 726, makecol(0, 0 ,0), -1, "%d", secondes);
         textprintf_centre_ex(page, font, 750, 726, makecol(0, 0, 0), -1, "%d ECEflouz", player->argent);
         textprintf_centre_ex(page, font, 250, 726, makecol(0, 0, 0), -1, "%d", player->nbhabitant);
         textprintf_centre_ex(page, font, 100, 500, makecol(255, 255, 255), -1, "souris : %d %d", mouse_x, mouse_y);
@@ -294,11 +294,16 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
 
         }
         evolution_batiment(player,batiment,condition);
-        if (timer >= 60000)
+        if (timer - marqueur1 >= 1000)
         {
-
-            timer = 0;
-            marqueur = timer;
+            marqueur1 = timer;
+            secondes += 1;
+        }
+        if (timer - marqueur2 >= 60000)
+        {
+            //timer = 0;
+            marqueur2 = timer;
+            secondes = 0;
             minutes += 1;
         }
         for(int z=0;z<player->nbpropriete;z++)
@@ -307,7 +312,11 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
         blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
         clear(page);
     }
+    for(int i=0; i<35; i++) 
+        free(plateau[i]);
+    free(plateau);
 }
+
 int evolution_batiment(t_joueur* player,t_bat* batiment, int* condition){
     for (int z = 0; z < player->nbpropriete; z++)
         {
@@ -325,69 +334,69 @@ int evolution_batiment(t_joueur* player,t_bat* batiment, int* condition){
             }
         }
 }
+
 int creation_chateau(t_joueur* player,t_case case_actu, t_bat* batiment,t_graphe* reseau){
-            player->argent-=100000;
-            t_eau new;
-            new.x1 = case_actu.x1;
-            new.x2 = case_actu.x2;
-            new.y1 = case_actu.y1; // intialisation nouvelle case
-            new.y2 = case_actu.y2;
-            new.iconeeau=batiment->water.iconeeau;
-            if(reseau->chateau->x1==0){
-
-                reseau->chateau=&new;
-                reseau->chateau->next=NULL;
-                player->nbpropriete+=1;
-            }
-            else{
-                while(reseau->chateau->next!=NULL){
-                    reseau->chateau=reseau->chateau->next;
-
-                }
-                reseau->chateau->next=(t_eau*)malloc(1*sizeof(t_eau));
-                reseau->chateau->next=&new;
-                }
+    player->argent-=100000;
+    t_eau new;
+    new.x1 = case_actu.x1;
+    new.x2 = case_actu.x2;
+    new.y1 = case_actu.y1; // initialisation nouvelle case
+    new.y2 = case_actu.y2;
+    new.iconeeau=batiment->water.iconeeau;
+    if(reseau->chateau->x1==0)
+    {
+        reseau->chateau=&new;
+        reseau->chateau->next=NULL;
+        player->nbpropriete+=1;
+    }
+    else
+    {
+        while(reseau->chateau->next!=NULL)
+        {
+            reseau->chateau=reseau->chateau->next;
+        }
+        reseau->chateau->next=(t_eau*)malloc(1*sizeof(t_eau));
+        reseau->chateau->next=&new;
+    }
 }
 int creation_batiment(t_joueur* player,t_case case_actu, t_bat* batiment){
                 
-                player->argent -= 1000;
-
-                t_bat new;
-                new.x1 = case_actu.x1;
-                new.x2 = case_actu.x2;
-                new.y1 = case_actu.y1; // intialisation nouvelle case
-                new.y2 = case_actu.y2;
-                strcpy(new.nom, batiment[0].nom);
-                new.prix = batiment[0].prix,
-                new.niveau = 0;
-                new.icone=batiment[0].icone;
-                new.habitant = batiment[0].habitant;
-                // printf("%d", player->propriete[0].prix);
-                if (player->propriete[0].prix != 1000)
-                {
-                    player->propriete[0] = new;
-                    player->nbpropriete = 1;
-                    player->propriete[0].marqueur = timer;
-                    printf("%d", player->propriete[0].x1);
-                }
-                else if (player->propriete[0].prix == 1000)
-                {
-                    for (int i = 0; i < 30; i++)
-                    {
-
-                        if (player->propriete[i].prix != 1000)
-                        { // condition verifiant si la propriete existe deja
-                            t_bat *temp;
-                            temp = player->propriete;
-                            player->nbpropriete += 1;
-                            player->propriete = (t_bat *)malloc(i * sizeof(t_bat));
-                            player->propriete = temp;
-                            player->propriete[i] = new;
-                            player->propriete[i].marqueur = timer;
-                            i = 32;
-                        }
-                    }
-                }
+    player->argent -= 1000;
+    t_bat new;
+    new.x1 = case_actu.x1;
+    new.x2 = case_actu.x2;
+    new.y1 = case_actu.y1; // intialisation nouvelle case
+    new.y2 = case_actu.y2;
+    strcpy(new.nom, batiment[0].nom);
+    new.prix = batiment[0].prix,
+    new.niveau = 0;
+    new.icone=batiment[0].icone;
+    new.habitant = batiment[0].habitant;
+    // printf("%d", player->propriete[0].prix);
+    if (player->propriete[0].prix != 1000)
+    {
+        player->propriete[0] = new;
+        player->nbpropriete = 1;
+        player->propriete[0].marqueur = timer;
+        printf("%d", player->propriete[0].x1);
+    }
+    else if (player->propriete[0].prix == 1000)
+    {
+        for (int i = 0; i < 30; i++)
+        {
+            if (player->propriete[i].prix != 1000)
+            { // condition verifiant si la propriete existe deja
+                t_bat *temp;
+                temp = player->propriete;
+                player->nbpropriete += 1;
+                player->propriete = (t_bat *)malloc(i * sizeof(t_bat));
+                player->propriete = temp;
+                player->propriete[i] = new;
+                player->propriete[i].marqueur = timer;
+                i = 32;
+            }
+        }
+    }
 }
 
 int main()
@@ -475,6 +484,13 @@ int main()
             // recuperer les donnes et les affilier.
         }
     }
+    free(player->propriete);
+    free(player);
+    free(batiment);
+    free(reseau->centrale);
+    free(reseau->chateau);
+    free(reseau->chaussee);
+    free(reseau);
     return 0;
 }
 END_OF_MAIN();
