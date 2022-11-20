@@ -59,6 +59,7 @@ typedef struct Graphe{
 
 }t_graphe;
 
+
 typedef struct joueur{
 
     int argent;
