@@ -11,6 +11,7 @@ END_OF_FUNCTION(incrementer_timer)
 
 void init_structure(t_bat *batiment, t_graphe *reseau) {
     FILE *f = fopen("batiments.txt", "r");
+    printf("commit fake");
 
     batiment[0].x1 = 0;
     batiment[0].x2 = batiment[0].x1 + 60;
@@ -207,6 +208,7 @@ int creation_batiment(t_joueur *player, t_case case_actu, t_bat *batiment) {
         }
     }
 }
+//commit
 
 int clicInMenu(BITMAP *detectionAccueil, int couleurPixel) {
     if (getr(couleurPixel) == 255 && getg(couleurPixel) == 0 && getb(couleurPixel) == 0) {
