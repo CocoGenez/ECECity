@@ -18,14 +18,14 @@ void initialisation_allegro()
     install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, NULL);//son
     set_config_int("sound", "quality", 1);
     set_window_title("ECE City");
-    install_timer();
+    install_timer();    
 
 }
 /*** creer les bITMAP en verifiant qu'il y a d'erreur***/
 BITMAP * creer_Bitmap(int width,int height){
     BITMAP*nvx = create_bitmap(width,height);
     if(!nvx){
-         allegro_message("Probleme lors de la création de la BITMAP!!");
+         allegro_message("Probleme lors de la crÃ©ation de la BITMAP!!");
         allegro_exit();
         exit(EXIT_FAILURE);
     }
