@@ -12,7 +12,7 @@ END_OF_FUNCTION(incrementer_timer)
 
 int menu(BITMAP *page, BITMAP *detection,BITMAP* accueil)
 {
-    install_mouse();
+    install_mouse();  
     show_mouse(screen);
     clear_bitmap(detection);
     clear_bitmap(page);
