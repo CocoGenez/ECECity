@@ -9,7 +9,7 @@ int menu(BITMAP *page, BITMAP *detection,BITMAP* accueil)
     rectfill(detection, 251, 638, 773, 704, makecol(0, 0, 255)); // QUITTER
 
     int modedejeu = 0;
-    int couleurpixel;
+    int couleurpixel;   
     while (!key[KEY_ESC])
     {
         blit(accueil, page, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
