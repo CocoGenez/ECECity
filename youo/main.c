@@ -51,6 +51,7 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
     LOCK_VARIABLE(timer);
     install_int_ex(incrementer_timer, MSEC_TO_TIMER(1));
 
+    
     while (!key[KEY_ESC])
     {
         rectfill(detection, 0, 540, 60, 600, makecol(254, 0, 0));
