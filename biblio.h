@@ -30,7 +30,7 @@ typedef struct route{
     int y;
     int prix;
     struct route* next;
-    BITMAP* iconeroute;
+    BITMAP** iconeroute;
 
 }t_route;
 
@@ -46,6 +46,9 @@ typedef struct batiment{
     int habitant;
     char nom[20];
     BITMAP* icone;
+    int chateau;
+    int centrale;
+    int capacite;
     struct eau water;
     struct electricite elec;
     struct route road;
@@ -69,6 +72,8 @@ typedef struct joueur{
     t_bat* propriete;
     int nbhabitant;
     int nbpropriete;
+    int nbroute;
+    t_route* bitume;
 
 }t_joueur;
 
