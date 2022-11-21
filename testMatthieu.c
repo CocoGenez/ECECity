@@ -137,13 +137,24 @@ int evolution_batiment(t_joueur *player, t_bat *batiment, int *condition) {
     }
 }
 
-int creation_chateau(t_joueur *player, t_case case_actu, t_bat *batiment, t_graphe *reseau) {
+int creation_chateau(t_joueur *player, t_case case_actu, t_bat *batiment, t_graphe *reseau, int** matrice) {
     player->argent -= 100000;
     t_eau new;
     new.x1 = case_actu.x1;
     new.x2 = case_actu.x2;
     new.y1 = case_actu.y1;  // intialisation nouvelle case
     new.y2 = case_actu.y2;
+
+    for(int i=0; i<3; i++){
+        for(int j=0; j<3; j++){
+            matrice[(case_actu.y1/20)][(case_actu.x1-124)/20]=1;
+            printf("MATRICE %d - %d = %d\n", case_actu.y1/20, (case_actu.x1-124)/20, matrice[case_actu.y1/20][(case_actu.x1-124)/20]);
+            case_actu.x1 +=20;
+        }
+        case_actu.y1 +=20;
+        case_actu.x1 -= 60;
+    }
+
     new.prix = 100000;
     new.capacite = 5000;
     //new.next ?
@@ -175,7 +186,7 @@ int creation_chateau(t_joueur *player, t_case case_actu, t_bat *batiment, t_grap
     }
 }
 
-int creation_batiment(t_joueur *player, t_case case_actu, t_bat *batiment) {
+int creation_batiment(t_joueur *player, t_case case_actu, t_bat *batiment, int** matrice) {
     player->argent -= 1000;
 
     t_bat new;
@@ -183,6 +194,17 @@ int creation_batiment(t_joueur *player, t_case case_actu, t_bat *batiment) {
     new.x2 = case_actu.x2;
     new.y1 = case_actu.y1;  // intialisation nouvelle case
     new.y2 = case_actu.y2;
+
+    for(int i=0; i<3; i++){
+        for(int j=0; j<3; j++){
+            matrice[(case_actu.y1/20)][(case_actu.x1-124)/20]=1;
+            printf("MATRICE %d - %d = %d\n", case_actu.y1/20, (case_actu.x1-124)/20, matrice[case_actu.y1/20][(case_actu.x1-124)/20]);
+            case_actu.x1 +=20;
+        }
+        case_actu.y1 +=20;
+        case_actu.x1 -= 60;
+    }
+
     strcpy(new.nom, batiment[0].nom);
     new.prix = batiment[0].prix,
     new.niveau = 0;
@@ -226,6 +248,20 @@ int clicInMenu(BITMAP *detectionAccueil, int couleurPixel) {
     }
 }
 
+int verifOccupation(int** matrice, t_case caseactu){
+    for(int i=0; i<3; i++){
+        for(int j=0; j<3; j++){
+            if(matrice[(caseactu.y1/20)][(caseactu.x1-124)/20]==1){
+                return 0;
+            }
+            caseactu.x1 +=20;
+        }
+        caseactu.y1 +=20;
+        caseactu.x1 -= 60;
+    }
+    return 1;
+}
+
 void lancementPartieCapitaliste() {
     BITMAP *map = load_bitmap("inGame.bmp", NULL);
     BITMAP *page = create_bitmap(SCREEN_W, SCREEN_H);
@@ -263,6 +299,15 @@ void lancementPartieCapitaliste() {
     
     t_case case_actu;
     t_case **plateau;
+    int** matriceJeu;
+    matriceJeu = (int**)malloc(35*sizeof(int*));
+    for (int i = 0; i < 35; i++)
+        matriceJeu[i] = (int*)malloc(45*sizeof(int));
+    for(int i=0; i<35; i++){
+        for(int j=0;j<45;j++){
+            matriceJeu[i][j] = 0;
+        }
+    }
     plateau = (t_case **)calloc(35, sizeof(t_case *));
     for (int i = 0; i < 35; i++)
         plateau[i] = calloc(45, sizeof(t_case));
@@ -311,8 +356,12 @@ void lancementPartieCapitaliste() {
                     if (case_actu.x1 != 0)
                         condi = 1;
                 }
-                creation_batiment(player,case_actu,batiment);
-                
+                if(verifOccupation(matriceJeu, case_actu) == 1){
+                    creation_batiment(player,case_actu,batiment, matriceJeu);
+                }
+                else{
+                    textprintf_right_ex(page, arial_rounded, 400, 400, makecol(30, 66, 120), -1, "Impossible, batiment present");
+                }
             }
             if (getr(couleurpixel) == 253 && getg(couleurpixel) == 0 && getb(couleurpixel) == 0)
             {
@@ -324,7 +373,12 @@ void lancementPartieCapitaliste() {
                         condi = 1;
                     }
                 }
-                creation_chateau(player,case_actu,batiment,reseau);
+                if(verifOccupation(matriceJeu, case_actu) == 1){
+                    creation_chateau(player,case_actu,batiment,reseau, matriceJeu);
+                }
+                else{
+                    textprintf_right_ex(page, arial_rounded, 400, 400, makecol(30, 66, 120), -1, "Impossible, batiment present");
+                }
             }
 
         }
