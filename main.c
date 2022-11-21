@@ -235,6 +235,37 @@ void initcase(t_case **plateau)
     }
 }
 
+int verifOccupation(int** matrice, t_case caseactu, int mode){
+    if(mode == 1){
+        for(int i=0; i<3; i++){
+            for(int j=0; j<3; j++){
+                if(matrice[(caseactu.y1/20)][(caseactu.x1-124)/20]==1){
+                    return 0;
+                }
+                caseactu.x1 +=20;
+            }
+            caseactu.y1 +=20;
+            caseactu.x1 -= 80;
+        }
+    } else if(mode == 2){
+        for(int i=0; i<6; i++){
+            for(int j=0; j<4; j++){
+                if(matrice[(caseactu.y1/20)][(caseactu.x1-124)/20]==1){
+                    return 0;
+                }
+                caseactu.x1 +=20;
+            }
+            caseactu.y1 +=20;
+            caseactu.x1 -= 80;
+        }
+    } else if(mode == 3){
+        if(matrice[(caseactu.y1/20)][(caseactu.x1-124)/20]==1){
+            return 0;
+        }
+    }
+    return 1;
+}
+
 void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur *player, BITMAP *map, t_graphe *reseau)
 {
 
@@ -242,6 +273,15 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
 
     t_case case_actu;
     t_case **plateau;
+    int** matriceJeu;
+    matriceJeu = (int**)malloc(35*sizeof(int*));
+    for (int i = 0; i < 35; i++)
+        matriceJeu[i] = (int*)malloc(45*sizeof(int));
+    for(int i=0; i<35; i++){
+        for(int j=0;j<45;j++){
+            matriceJeu[i][j] = 0;
+        }
+    }
     plateau = (t_case **)calloc(35, sizeof(t_case *));
     for (int i = 0; i < 35; i++)
         plateau[i] = calloc(45, sizeof(t_case));
@@ -306,7 +346,9 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                         if (case_actu.x1 != 0)
                             condi = 1;
                     }
-                    creation_batiment(player, case_actu, batiment);
+                    if(verifOccupation(matriceJeu, case_actu, 1) == 1){
+                        creation_batiment(player, case_actu, batiment, matriceJeu);
+                    }
                 }
                 else
                 {
@@ -327,7 +369,9 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                             condi2 = 1;
                     }
                     printf("/%d", condi2);
-                    creation_chateau(player, case_actu, batiment, reseau);
+                    if(verifOccupation(matriceJeu, case_actu, 2) == 1){
+                        creation_chateau(player,case_actu,batiment,reseau, matriceJeu);
+                    }
                 }
                 else
                 {
@@ -348,7 +392,9 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                             condi3 = 1;
                     }
                     printf("/%d", condi3);
-                    creation_centrale(player, case_actu, batiment, reseau);
+                    if(verifOccupation(matriceJeu, case_actu, 2) == 1){
+                        creation_centrale(player, case_actu, batiment, reseau, matriceJeu);
+                    }
                 }
                 else
                 {
@@ -371,7 +417,9 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                             condi4 = 1;
                         printf("%d",case_actu.x1);
                     }
-                    creation_route(player, case_actu, batiment, reseau,trucpourrouler);
+                    if(verifOccupation(matriceJeu, case_actu, 3) == 1){
+                        creation_route(player, case_actu, batiment, reseau,trucpourrouler, matriceJeu);
+                    }
                 }
                 else
                 {
@@ -501,12 +549,14 @@ int choix_panel(t_joueur *player, t_case case_actu, t_bat *batiment, t_graphe *r
     }
 }
 
-int creation_route(t_joueur *player, t_case case_actu, t_route *route, t_graphe *reseau,int number)
+int creation_route(t_joueur *player, t_case case_actu, t_route *route, t_graphe *reseau,int number, int** matrice)
 {
     player->argent-=10;
     t_route new;
     new.x=case_actu.x1;
     new.y=case_actu.y1;
+    matrice[(case_actu.y1/20)][(case_actu.x1-124)/20]=1;
+
     new.prix=10;
     new.iconeroute=reseau->chaussee->iconeroute[number];
      if (player->bitume[0].prix != 10)
@@ -555,7 +605,7 @@ int evolution_batiment(t_joueur *player, t_bat *batiment, int *condition)
         }
     }
 }
-int creation_chateau(t_joueur *player, t_case case_actu, t_bat *batiment, t_graphe *reseau)
+int creation_chateau(t_joueur *player, t_case case_actu, t_bat *batiment, t_graphe *reseau, int** matrice)
 {
     player->argent -= 100000;
     t_bat new;
@@ -563,6 +613,17 @@ int creation_chateau(t_joueur *player, t_case case_actu, t_bat *batiment, t_grap
     new.x2 = case_actu.x2;
     new.y1 = case_actu.y1; // intialisation nouvelle case
     new.y2 = case_actu.y2;
+
+    for(int i=0; i<6; i++){
+        for(int j=0; j<4; j++){
+            matrice[(case_actu.y1/20)][(case_actu.x1-124)/20]=1;
+            printf("MATRICE %d - %d = %d\n", case_actu.y1/20, (case_actu.x1-124)/20, matrice[case_actu.y1/20][(case_actu.x1-124)/20]);
+            case_actu.x1 +=20;
+        }
+        case_actu.y1 +=20;
+        case_actu.x1 -= 80;
+    }
+
     new.prix = 1000;
     new.chateau = 1;
     new.centrale = 0; // precise que c un chateau;
@@ -593,14 +654,25 @@ int creation_chateau(t_joueur *player, t_case case_actu, t_bat *batiment, t_grap
         }
     }
 }
-int creation_centrale(t_joueur *player, t_case case_actu, t_bat *batiment, t_graphe *reseau)
+int creation_centrale(t_joueur *player, t_case case_actu, t_bat *batiment, t_graphe *reseau, int** matrice)
 {
     player->argent -= 100000;
     t_bat new;
-            new.x1 = case_actu.x1;
-            new.x2 = case_actu.x2;
-            new.y1 = case_actu.y1; // intialisation nouvelle case
-            new.y2 = case_actu.y2;
+    new.x1 = case_actu.x1;
+    new.x2 = case_actu.x2;
+    new.y1 = case_actu.y1; // intialisation nouvelle case
+    new.y2 = case_actu.y2;
+
+    for(int i=0; i<6; i++){
+        for(int j=0; j<4; j++){
+            matrice[(case_actu.y1/20)][(case_actu.x1-124)/20]=1;
+            printf("MATRICE %d - %d = %d\n", case_actu.y1/20, (case_actu.x1-124)/20, matrice[case_actu.y1/20][(case_actu.x1-124)/20]);
+            case_actu.x1 +=20;
+        }
+        case_actu.y1 +=20;
+        case_actu.x1 -= 80;
+    }
+
     new.prix = 1000;
     new.chateau = 0;
     new.centrale = 1; // precise que c un chateau;
@@ -634,49 +706,60 @@ int creation_centrale(t_joueur *player, t_case case_actu, t_bat *batiment, t_gra
 }
 }
 
-int creation_batiment(t_joueur *player, t_case case_actu, t_bat *batiment)
+int creation_batiment(t_joueur *player, t_case case_actu, t_bat *batiment, int** matrice)
 {
                 
-                player->argent -= 1000;
+    player->argent -= 1000;
 
-                t_bat new;
-                new.x1 = case_actu.x1;
-                new.x2 = case_actu.x2;
-                new.y1 = case_actu.y1; // intialisation nouvelle case
-                new.y2 = case_actu.y2;
-                strcpy(new.nom, batiment[0].nom);
-                new.prix = batiment[0].prix,
+    t_bat new;
+    new.x1 = case_actu.x1;
+    new.x2 = case_actu.x2;
+    new.y1 = case_actu.y1; // intialisation nouvelle case
+    new.y2 = case_actu.y2;
+
+    for(int i=0; i<3; i++){
+        for(int j=0; j<3; j++){
+            matrice[(case_actu.y1/20)][(case_actu.x1-124)/20]=1;
+            printf("MATRICE %d - %d = %d\n", case_actu.y1/20, (case_actu.x1-124)/20, matrice[case_actu.y1/20][(case_actu.x1-124)/20]);
+            case_actu.x1 +=20;
+        }
+        case_actu.y1 +=20;
+        case_actu.x1 -= 60;
+    }
+
+    strcpy(new.nom, batiment[0].nom);
+    new.prix = batiment[0].prix,
     new.centrale = 0;
     new.chateau = 0;
-                new.niveau = 0;
-                new.icone = batiment[0].icone;
-                new.habitant = batiment[0].habitant;
-                // printf("%d", player->propriete[0].prix);
-                if (player->propriete[0].prix != 1000)
-                {
-                    player->propriete[0] = new;
-                    player->nbpropriete = 1;
-                    player->propriete[0].marqueur = timer;
-                    printf("%d", player->propriete[0].x1);
-                }
-                else if (player->propriete[0].prix == 1000)
-                {
-                    for (int i = 0; i < 30; i++)
-                    {
+    new.niveau = 0;
+    new.icone = batiment[0].icone;
+    new.habitant = batiment[0].habitant;
+    // printf("%d", player->propriete[0].prix);
+    if (player->propriete[0].prix != 1000)
+    {
+        player->propriete[0] = new;
+        player->nbpropriete = 1;
+        player->propriete[0].marqueur = timer;
+        printf("%d", player->propriete[0].x1);
+    }
+    else if (player->propriete[0].prix == 1000)
+    {
+        for (int i = 0; i < 30; i++)
+        {
 
-                        if (player->propriete[i].prix != 1000)
-                        { // condition verifiant si la propriete existe deja
-                            t_bat *temp;
-                            temp = player->propriete;
-                            player->nbpropriete += 1;
-                            player->propriete = (t_bat *)malloc(i * sizeof(t_bat));
-                            player->propriete = temp;
-                            player->propriete[i] = new;
-                            player->propriete[i].marqueur = timer;
-                            i = 32;
-                        }
-                    }
-                }
+            if (player->propriete[i].prix != 1000)
+            { // condition verifiant si la propriete existe deja
+                t_bat *temp;
+                temp = player->propriete;
+                player->nbpropriete += 1;
+                player->propriete = (t_bat *)malloc(i * sizeof(t_bat));
+                player->propriete = temp;
+                player->propriete[i] = new;
+                player->propriete[i].marqueur = timer;
+                i = 32;
+            }
+        }
+    }
 }
 
 int main()
