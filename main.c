@@ -10,7 +10,7 @@ void incrementer_timer()
 }
 END_OF_FUNCTION(incrementer_timer)
 
-int menu(BITMAP *page, BITMAP *detection,BITMAP* accueil)
+int menu(BITMAP *page, BITMAP *detection, BITMAP *accueil)
 {
     install_mouse();
     show_mouse(screen);
@@ -26,14 +26,13 @@ int menu(BITMAP *page, BITMAP *detection,BITMAP* accueil)
     {
         blit(accueil, page, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
         blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-       
 
         if (mouse_b == 1)
         {
             couleurpixel = getpixel(detection, mouse_x, mouse_y);
             if (getr(couleurpixel) == 255 && getg(couleurpixel) == 0 && getb(couleurpixel) == 0)
             {
-                modedejeu = nouvellepartie(page, detection,accueil);
+                modedejeu = nouvellepartie(page, detection, accueil);
                 return modedejeu;
             }
             if (getr(couleurpixel) == 0 && getg(couleurpixel) == 255 && getb(couleurpixel) == 0)
@@ -49,7 +48,7 @@ int menu(BITMAP *page, BITMAP *detection,BITMAP* accueil)
     }
 }
 
-int nouvellepartie(BITMAP *page, BITMAP *detection,BITMAP* accueil)
+int nouvellepartie(BITMAP *page, BITMAP *detection, BITMAP *accueil)
 {
 
     clear_bitmap(detection);
@@ -65,7 +64,6 @@ int nouvellepartie(BITMAP *page, BITMAP *detection,BITMAP* accueil)
     install_mouse();
     show_mouse(screen);
 
-    
     rectfill(detection, 345, 459, 720, 496, makecol(255, 0, 0)); // CAPITALISTE
     rectfill(detection, 345, 505, 720, 549, makecol(0, 255, 0)); // COMMUNISTE
     rectfill(detection, 519, 576, 701, 620, makecol(254, 245, 0));
@@ -75,7 +73,7 @@ int nouvellepartie(BITMAP *page, BITMAP *detection,BITMAP* accueil)
     int matthieu = 0;
     while (!key[KEY_ESC])
     {
-        //blit(detection,screen,0,0,0,0,SCREEN_W,SCREEN_H);
+        // blit(detection,screen,0,0,0,0,SCREEN_W,SCREEN_H);
         blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
         if (mouse_b == 2)
         {
@@ -102,7 +100,7 @@ int nouvellepartie(BITMAP *page, BITMAP *detection,BITMAP* accueil)
 
             if (getr(couleurpixel) == 0 && getg(couleurpixel) == 0 && getb(couleurpixel) == 254)
             {
-                menu(page, detection,accueil);
+                menu(page, detection, accueil);
             }
         }
     }
@@ -118,56 +116,69 @@ void init_structure(t_bat *batiment, t_graphe *reseau)
     fscanf(f, "%d", &batiment[0].habitant);
     batiment[0].prix = 1000;
     strcpy(batiment[0].nom, "terrain_vague");
-    batiment[0].icone=load_bitmap("images_structure/habitation/terrain_vague.bmp",NULL);
+    batiment[0].icone = load_bitmap("images_structure/habitation/terrain_vague.bmp", NULL);
 
     batiment[1].x1 = 0;
     batiment[1].x2 = batiment[1].x1 + 60;
     batiment[1].y2 = batiment[1].y1 + 60;
     fscanf(f, "%d", &batiment[1].habitant);
     strcpy(batiment[1].nom, "cabane");
-     batiment[1].icone=load_bitmap("images_structure/habitation/cabane.bmp",NULL);
+    batiment[1].icone = load_bitmap("images_structure/habitation/cabane.bmp", NULL);
 
     batiment[2].x1 = 0;
     batiment[2].x2 = batiment[2].x1 + 60;
     batiment[0].y2 = batiment[2].y1 + 60;
     fscanf(f, "%d", &batiment[2].habitant);
     strcpy(batiment[2].nom, "maison");
-     batiment[2].icone=load_bitmap("images_structure/habitation/maison.bmp",NULL);
+    batiment[2].icone = load_bitmap("images_structure/habitation/maison.bmp", NULL);
 
     batiment[3].x1 = 0;
     batiment[3].x2 = batiment[3].x1 + 60;
     batiment[3].y2 = batiment[3].y1 + 60;
     fscanf(f, "%d", &batiment[3].habitant);
     strcpy(batiment[3].nom, "immeuble");
-     batiment[3].icone=load_bitmap("images_structure/habitation/immeuble.bmp",NULL);
+    batiment[3].icone = load_bitmap("images_structure/habitation/immeuble.bmp", NULL);
 
     batiment[4].x1 = 0;
     batiment[4].x2 = batiment[4].x1 + 60;
     batiment[4].y2 = batiment[4].y1 + 60;
     fscanf(f, "%d", &batiment[4].habitant);
     strcpy(batiment[4].nom, "gratte_ciel");
-    batiment[4].icone=load_bitmap("images_structure/habitation/gratte_ciel.bmp",NULL);
+    batiment[4].icone = load_bitmap("images_structure/habitation/gratte_ciel.bmp", NULL);
 
     reseau->centrale->x2 = reseau->centrale->x1 + 80;
     reseau->centrale->y2 = reseau->centrale->y1 + 120;
     reseau->centrale->capacite = 5000;
     reseau->centrale->prix = 100000;
-    batiment->elec.iconeelec= load_bitmap("images_structure/centrale_electrique.bmp",NULL);
-    
-    reseau->chateau->x1=0;
+    batiment->elec.iconeelec = load_bitmap("images_structure/centrale_electrique.bmp", NULL);
+
+    reseau->chateau->x1 = 0;
     reseau->chateau->x2 = reseau->chateau->x1 + 80;
     reseau->chateau->y2 = reseau->chateau->y1 + 120;
     reseau->chateau->capacite = 5000;
     reseau->chateau->prix = 100000;
-    batiment->water.iconeeau=load_bitmap("images_structure/chateau_eau.bmp",NULL);
+    batiment->water.iconeeau = load_bitmap("images_structure/chateau_eau.bmp", NULL);
 
-
-    reseau->chaussee->prix=10;
+    reseau->chaussee->prix = 10;
+    reseau->chaussee->iconeroute[0]=load_bitmap("images_structure/routes/virage1.bmp",NULL);
+    reseau->chaussee->iconeroute[1]=load_bitmap("images_structure/routes/virage4.bmp",NULL);
+    reseau->chaussee->iconeroute[2]=load_bitmap("images_structure/routes/virage3.bmp",NULL);
+    reseau->chaussee->iconeroute[3]=load_bitmap("images_structure/routes/virage2.bmp",NULL);
+    reseau->chaussee->iconeroute[4]=load_bitmap("images_structure/routes/impasse3.bmp",NULL);
+    reseau->chaussee->iconeroute[5]=load_bitmap("images_structure/routes/impasse2.bmp",NULL);
+    reseau->chaussee->iconeroute[6]=load_bitmap("images_structure/routes/impasse4.bmp",NULL);
+    reseau->chaussee->iconeroute[7]=load_bitmap("images_structure/routes/impasse1.bmp",NULL);
+    reseau->chaussee->iconeroute[8]=load_bitmap("images_structure/routes/virage_double1.bmp",NULL);
+    reseau->chaussee->iconeroute[9]=load_bitmap("images_structure/routes/virage_double4.bmp",NULL);
+    reseau->chaussee->iconeroute[10]=load_bitmap("images_structure/routes/virage_double3.bmp",NULL);
+    reseau->chaussee->iconeroute[11]=load_bitmap("images_structure/routes/virage_double2.bmp",NULL);
+    reseau->chaussee->iconeroute[12]=load_bitmap("images_structure/routes/normal1.bmp",NULL);
+    reseau->chaussee->iconeroute[13]=load_bitmap("images_structure/routes/normal2.bmp",NULL);
+    reseau->chaussee->iconeroute[14]=load_bitmap("images_structure/routes/carrefour.bmp",NULL);
     
-
 }
 
-t_case detecterCase(t_case **plateau,BITMAP* page,BITMAP* batiment,BITMAP* map,t_joueur* player)
+t_case detecterCase(t_case **plateau, BITMAP *page, BITMAP *batiment, BITMAP *map, t_joueur *player)
 {
     clear_bitmap(page);
     t_case casecliquee;
@@ -175,21 +186,28 @@ t_case detecterCase(t_case **plateau,BITMAP* page,BITMAP* batiment,BITMAP* map,t
     int ysouris = 0;
     int casechoisie_x = 0;
     int casechoisie_y = 0;
-    blit(map,page,0,0,0,0,SCREEN_W,SCREEN_H);
-    draw_sprite(page,batiment,mouse_x,mouse_y);
-    for(int z=0;z<player->nbpropriete;z++)
-            draw_sprite(page,player->propriete[z].icone,player->propriete[z].x1,player->propriete[z].y1);
-    blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-    if (mouse_b == 1)
+    printf("jentre");
+    while (casechoisie_x == 0)
     {
-        xsouris = (mouse_x) / 20;
-        ysouris = (mouse_y) / 20;
-        if (xsouris <= 50 && xsouris >= 6 && ysouris <= 34 && ysouris >= 0)
+        blit(map, page, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        draw_sprite(page, batiment, mouse_x, mouse_y);
+         for (int z = 0; z < player->nbroute; z++)
+            draw_sprite(page, player->bitume[z].iconeroute, player->bitume[z].x, player->bitume[z].y);
+        for (int z = 0; z < player->nbpropriete; z++)
+            draw_sprite(page, player->propriete[z].icone, player->propriete[z].x1, player->propriete[z].y1);
+        blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+
+        if (mouse_b == 1)
         {
-            casechoisie_x = xsouris-6;
-            casechoisie_y = ysouris;
-            casecliquee = plateau[casechoisie_y][casechoisie_x];
-            return casecliquee;
+            xsouris = (mouse_x) / 20;
+            ysouris = (mouse_y) / 20;
+            if (xsouris <= 50 && xsouris >= 6 && ysouris <= 34 && ysouris >= 0)
+            {
+                casechoisie_x = xsouris - 6;
+                casechoisie_y = ysouris;
+                casecliquee = plateau[casechoisie_y][casechoisie_x];
+                return casecliquee;
+            }
         }
     }
     // blit(pagetemp, decor, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
@@ -217,12 +235,11 @@ void initcase(t_case **plateau)
     }
 }
 
-void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur *player,BITMAP* map,t_graphe* reseau)
+void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur *player, BITMAP *map, t_graphe *reseau)
 {
 
-    
-    player->nbhabitant=0;
-    
+    player->nbhabitant = 0;
+
     t_case case_actu;
     t_case **plateau;
     plateau = (t_case **)calloc(35, sizeof(t_case *));
@@ -235,12 +252,19 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
 
     player->argent = 500000;
     player->nbhabitant = 0;
-
+    BITMAP *panel;
+    panel = load_bitmap("images_structure/panel/route_panel.bmp", NULL);
+    if (!panel)
+    {
+        allegro_message("Erreur image Accueil");
+        exit(EXIT_FAILURE);
+    }
     timer = 0;
     int minutes = 0;
-    int condi = 0;
-    
+    int condi = 0, condi2 = 0, condi3 = 0, condi4 = 0;
+
     int marqueur = timer;
+    int trucpourrouler;
     LOCK_FUNCTION(incrementer_timer);
     LOCK_VARIABLE(timer);
     install_int_ex(incrementer_timer, MSEC_TO_TIMER(1));
@@ -248,52 +272,115 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
 
     while (!key[KEY_ESC])
     {
-        rectfill(detection, 24, 202, 101, 279, makecol(254, 0, 0)); //batiment
-        rectfill(detection, 24, 296, 101, 373, makecol(253, 0, 0));//chateau
-        rectfill(detection, 24, 390, 101, 467, makecol(252, 0, 0));//caserne
-        rectfill(detection, 24, 484, 101, 561, makecol(251, 0, 0));//centrale
+        clear_bitmap(detection);
+        rectfill(detection, 24, 202, 101, 279, makecol(254, 0, 0)); // batiment
+        rectfill(detection, 24, 296, 101, 373, makecol(253, 0, 0)); // chateau
+        rectfill(detection, 24, 390, 101, 467, makecol(252, 0, 0)); // caserne
+        rectfill(detection, 24, 484, 101, 561, makecol(251, 0, 0)); // centrale
+        rectfill(detection, 24, 108, 101, 185, makecol(250, 0, 0)); // panel route
 
         int couleurpixel;
-        blit(map,page,0,0,0,0,SCREEN_W,SCREEN_H);
+        blit(map, page, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
         textprintf_centre_ex(page, font, 930, 726, makecol(0, 0, 0), -1, "%d :", minutes);
-        textprintf_centre_ex(page, font, 960, 726, makecol(0, 0 ,0), -1, "%d", timer / 1000);
+        textprintf_centre_ex(page, font, 960, 726, makecol(0, 0, 0), -1, "%d", timer / 1000);
         textprintf_centre_ex(page, font, 750, 726, makecol(0, 0, 0), -1, "%d ECEflouz", player->argent);
         textprintf_centre_ex(page, font, 250, 726, makecol(0, 0, 0), -1, "%d", player->nbhabitant);
         textprintf_centre_ex(page, font, 100, 500, makecol(255, 255, 255), -1, "souris : %d %d", mouse_x, mouse_y);
-        int condition[30]={0};
+        int condition[30] = {0};
         condi = 0;
-        
+        condi2 = 0;
+        condi3 = 0;
+        condi4 = 0;
+
         if (mouse_b == 2)
         {
             couleurpixel = getpixel(detection, mouse_x, mouse_y);
             if (getr(couleurpixel) == 254 && getg(couleurpixel) == 0 && getb(couleurpixel) == 0)
             {
-
-                while (condi == 0)
+                if (player->argent > batiment[0].prix)
                 {
-                    case_actu.x1 = 0;
-                    case_actu = detecterCase(plateau,page,batiment[0].icone,map,player);
-                    if (case_actu.x1 != 0)
-                        condi = 1;
+
+                    while (condi == 0)
+                    {
+                        case_actu.x1 = 0;
+                        case_actu = detecterCase(plateau, page, batiment[0].icone, map, player);
+                        if (case_actu.x1 != 0)
+                            condi = 1;
+                    }
+                    creation_batiment(player, case_actu, batiment);
                 }
-                creation_batiment(player,case_actu,batiment);
-                
+                else
+                {
+                    textprintf_centre_ex(page, font, 500, 100, makecol(255, 0, 0), -1, "MANQUE DE MOULA");
+                }
             }
             if (getr(couleurpixel) == 253 && getg(couleurpixel) == 0 && getb(couleurpixel) == 0)
             {
-                printf("%d",condi);
-                while (condi == 0)
+                if (player->argent > reseau->chateau->prix)
                 {
-                    case_actu.x1 = 0;
-                    case_actu = detecterCase(plateau,page,batiment->water.iconeeau,map,player);
-                    if (case_actu.x1 != 0)
-                        condi = 1;
-                }
-                creation_chateau(player,case_actu,batiment,reseau);
-            }
 
+                    while (condi2 == 0)
+                    {
+                        printf("/%d", condi2);
+                        case_actu.x1 = 0;
+                        case_actu = detecterCase(plateau, page, batiment->water.iconeeau, map, player);
+                        if (case_actu.x1 != 0)
+                            condi2 = 1;
+                    }
+                    printf("/%d", condi2);
+                    creation_chateau(player, case_actu, batiment, reseau);
+                }
+                else
+                {
+                    textprintf_centre_ex(page, font, 500, 100, makecol(255, 0, 0), -1, "MANQUE DE MOULA");
+                }
+            }
+            if (getr(couleurpixel) == 251 && getg(couleurpixel) == 0 && getb(couleurpixel) == 0)
+            {
+                if (player->argent > reseau->centrale->prix)
+                {
+
+                    while (condi3 == 0)
+                    {
+                        printf("/%d", condi3);
+                        case_actu.x1 = 0;
+                        case_actu = detecterCase(plateau, page, batiment->elec.iconeelec, map, player);
+                        if (case_actu.x1 != 0)
+                            condi3 = 1;
+                    }
+                    printf("/%d", condi3);
+                    creation_centrale(player, case_actu, batiment, reseau);
+                }
+                else
+                {
+                    textprintf_centre_ex(page, font, 500, 100, makecol(255, 0, 0), -1, "MANQUE DE MOULA");
+                }
+            }
+            if (getr(couleurpixel) == 250 && getg(couleurpixel) == 0 && getb(couleurpixel) == 0)
+            {
+                if (player->argent > reseau->chaussee->prix)
+                {
+
+                    while (condi4 == 0)
+                    {
+                        trucpourrouler=choix_panel(player, case_actu, batiment, reseau, map, page, panel, detection);
+
+                        case_actu.x1 = 0;
+                        printf("%d",case_actu.x1);
+                        case_actu = detecterCase(plateau, page, reseau->chaussee->iconeroute[trucpourrouler], map, player);
+                        if (case_actu.x1 != 0)
+                            condi4 = 1;
+                        printf("%d",case_actu.x1);
+                    }
+                    creation_route(player, case_actu, batiment, reseau,trucpourrouler);
+                }
+                else
+                {
+                    textprintf_centre_ex(page, font, 500, 100, makecol(255, 0, 0), -1, "MANQUE DE MOULA");
+                }
+            }
         }
-        evolution_batiment(player,batiment,condition);
+        evolution_batiment(player, batiment, condition);
         if (timer >= 60000)
         {
 
@@ -301,93 +388,291 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
             marqueur = timer;
             minutes += 1;
         }
-        for(int z=0;z<player->nbpropriete;z++)
-            draw_sprite(page,player->propriete[z].icone,player->propriete[z].x1,player->propriete[z].y1);
+         for (int z = 0; z < player->nbroute; z++){
+            if(player->bitume[z].prix==10){
+                printf("%d",z);
+            }
+            
+            draw_sprite(page, player->bitume[z].iconeroute, player->bitume[z].x, player->bitume[z].y);
+         }
+        for (int z = 0; z < player->nbpropriete; z++)
+            draw_sprite(page, player->propriete[z].icone, player->propriete[z].x1, player->propriete[z].y1);
         textprintf_centre_ex(page, font, 500, 300, makecol(255, 255, 255), -1, "%d - %d", case_actu.x1, case_actu.y1);
         blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
         clear(page);
     }
 }
-int evolution_batiment(t_joueur* player,t_bat* batiment, int* condition){
-    for (int z = 0; z < player->nbpropriete; z++)
+int choix_panel(t_joueur *player, t_case case_actu, t_bat *batiment, t_graphe *reseau, BITMAP *map, BITMAP *page, BITMAP *panel, BITMAP *detection)
+{
+    int choix = 0;
+    int couleurpixel;
+    rectfill(detection, 148, 124, 188, 164, makecol(0, 0, 255));
+    rectfill(detection, 201, 124, 241, 164, makecol(0, 0, 254));
+    rectfill(detection, 254, 124, 294, 164, makecol(0, 0, 253));
+    rectfill(detection, 307, 124, 347, 164, makecol(0, 0, 252));
+    rectfill(detection, 148, 173, 188, 213, makecol(0, 0, 251));
+    rectfill(detection, 201, 173, 241, 213, makecol(0, 0, 250));
+    rectfill(detection, 254, 173, 294, 213, makecol(0, 0, 249));
+    rectfill(detection, 307, 173, 347, 213, makecol(0, 0, 248));
+    rectfill(detection, 148, 224, 188, 264, makecol(0, 0, 247));
+    rectfill(detection, 201, 224, 241, 264, makecol(0, 0, 246));
+    rectfill(detection, 254, 224, 294, 264, makecol(0, 0, 245));
+    rectfill(detection, 307, 224, 347, 264, makecol(0, 0, 244));
+    rectfill(detection, 148, 275, 188, 315, makecol(0, 0, 243));
+    rectfill(detection, 201, 275, 241, 315, makecol(0, 0, 242));
+    rectfill(detection, 148, 326, 188, 366, makecol(0, 0, 241));
+    while (choix == 0)
+    {
+        blit(map, page, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        
+        for (int z = 0; z < player->nbpropriete; z++)
+            draw_sprite(page, player->propriete[z].icone, player->propriete[z].x1, player->propriete[z].y1);
+        for (int z = 0; z < player->nbroute; z++)
+            draw_sprite(page, player->bitume[z].iconeroute, player->bitume[z].x, player->bitume[z].y);
+        blit(panel, page, 0, 0, 124, 100, SCREEN_W, SCREEN_H);
+        blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+
+        if (mouse_b == 2)
         {
-            //printf("%d : %d \n", z, player->propriete[z].niveau);
-            //printf("%d : %d \n", z, batiment[player->propriete[z].niveau + 1].habitant-batiment[player->propriete[z].niveau].habitant);
-            //printf("%d : %d \n", z, batiment[player->propriete[z].niveau].habitant);
-            if (timer - player->propriete[z].marqueur >= 15000  && player->propriete[z].niveau < 4 && condition[z]==0)
+            couleurpixel = getpixel(detection, mouse_x, mouse_y);
+            if (getr(couleurpixel) == 0 && getg(couleurpixel) == 0 && getb(couleurpixel) == 255)
             {
-                player->propriete[z].habitant = batiment[player->propriete[z].niveau + 1].habitant;
-                player->propriete[z].icone=batiment[player->propriete[z].niveau + 1].icone;
-                player->nbhabitant += batiment[player->propriete[z].niveau + 1].habitant - batiment[player->propriete[z].niveau].habitant;
-                player->propriete[z].niveau += 1;
-                player->propriete[z].marqueur = timer;
-                condition[z]=1;
+                return 0;
+            }
+            if (getr(couleurpixel) == 0 && getg(couleurpixel) == 0 && getb(couleurpixel) == 254)
+            {
+                return 1;
+            }
+            if (getr(couleurpixel) == 0 && getg(couleurpixel) == 0 && getb(couleurpixel) == 253)
+            {
+                return 2;
+            }
+            if (getr(couleurpixel) == 0 && getg(couleurpixel) == 0 && getb(couleurpixel) == 252)
+            {
+                return 3;
+            }
+            if (getr(couleurpixel) == 0 && getg(couleurpixel) == 0 && getb(couleurpixel) == 251)
+            {
+                return 4;
+            }
+            if (getr(couleurpixel) == 0 && getg(couleurpixel) == 0 && getb(couleurpixel) == 250)
+            {
+                return 5;
+            }
+            if (getr(couleurpixel) == 0 && getg(couleurpixel) == 0 && getb(couleurpixel) == 249)
+            {
+                return 6;
+            }
+            if (getr(couleurpixel) == 0 && getg(couleurpixel) == 0 && getb(couleurpixel) == 248)
+            {
+                return 7;
+            }
+            if (getr(couleurpixel) == 0 && getg(couleurpixel) == 0 && getb(couleurpixel) == 247)
+            {
+                return 8;
+            }
+            if (getr(couleurpixel) == 0 && getg(couleurpixel) == 0 && getb(couleurpixel) == 246)
+            {
+                return 9;
+            }
+            if (getr(couleurpixel) == 0 && getg(couleurpixel) == 0 && getb(couleurpixel) == 245)
+            {
+                return 10;
+            }
+            if (getr(couleurpixel) == 0 && getg(couleurpixel) == 0 && getb(couleurpixel) == 244)
+            {
+                return 11;
+            }
+            if (getr(couleurpixel) == 0 && getg(couleurpixel) == 0 && getb(couleurpixel) == 243)
+            {
+                return 12;
+            }
+            if (getr(couleurpixel) == 0 && getg(couleurpixel) == 0 && getb(couleurpixel) == 242)
+            {
+                return 13;
+            }
+            if (getr(couleurpixel) == 0 && getg(couleurpixel) == 0 && getb(couleurpixel) == 241)
+            {
+                return 14;
             }
         }
+    }
 }
-int creation_chateau(t_joueur* player,t_case case_actu, t_bat* batiment,t_graphe* reseau){
-            player->argent-=100000;
-            t_eau new;
-            new.x1 = case_actu.x1;
-            new.x2 = case_actu.x2;
-            new.y1 = case_actu.y1; // intialisation nouvelle case
-            new.y2 = case_actu.y2;
-            new.iconeeau=batiment->water.iconeeau;
-            if(reseau->chateau->x1==0){
 
-                reseau->chateau=&new;
-                reseau->chateau->next=NULL;
-                player->nbpropriete+=1;
-            }
-            else{
-                while(reseau->chateau->next!=NULL){
-                    reseau->chateau=reseau->chateau->next;
+int creation_route(t_joueur *player, t_case case_actu, t_route *route, t_graphe *reseau,int number)
+{
+    player->argent-=10;
+    t_route new;
+    new.x=case_actu.x1;
+    new.y=case_actu.y1;
+    new.prix=10;
+    new.iconeroute=reseau->chaussee->iconeroute[number];
+     if (player->bitume[0].prix != 10)
+    {
+        player->bitume[0] = new;
+        player->nbroute=1;
+        printf("route1");
+        
+    }
+    else if (player->bitume[0].prix == 10)
+    {
+        for (int i = 0; i < 200; i++)
+        {
 
-                }
-                reseau->chateau->next=(t_eau*)malloc(1*sizeof(t_eau));
-                reseau->chateau->next=&new;
-                }
-}
-int creation_batiment(t_joueur* player,t_case case_actu, t_bat* batiment){
+            if (player->bitume[i].prix != 10)
+            { // condition verifiant si la propriete existe deja
+                t_route*temp;
+                temp = player->bitume;
+                player->nbroute+=1;
                 
-                player->argent -= 1000;
+                player->bitume = (t_bat *)malloc(i * sizeof(t_bat));
+                player->bitume = temp;
+                player->bitume[i] = new;
+                player->bitume[i].prix=10;
+                i = 202;
+                printf("route2");
+            }
+        }
+    }
+}
+int evolution_batiment(t_joueur *player, t_bat *batiment, int *condition)
+{
+    for (int z = 0; z < player->nbpropriete; z++)
+    {
+        // printf("%d : %d \n", z, player->propriete[z].niveau);
+        // printf("%d : %d \n", z, batiment[player->propriete[z].niveau + 1].habitant-batiment[player->propriete[z].niveau].habitant);
+        // printf("%d : %d \n", z, batiment[player->propriete[z].niveau].habitant);
+        if (timer - player->propriete[z].marqueur >= 15000 && player->propriete[z].niveau < 4 && condition[z] == 0 && player->propriete[z].centrale == 0 && player->propriete[z].chateau == 0)
+        {
+            player->propriete[z].habitant = batiment[player->propriete[z].niveau + 1].habitant;
+            player->propriete[z].icone = batiment[player->propriete[z].niveau + 1].icone;
+            player->nbhabitant += batiment[player->propriete[z].niveau + 1].habitant - batiment[player->propriete[z].niveau].habitant;
+            player->propriete[z].niveau += 1;
+            player->propriete[z].marqueur = timer;
+            condition[z] = 1;
+        }
+    }
+}
+int creation_chateau(t_joueur *player, t_case case_actu, t_bat *batiment, t_graphe *reseau)
+{
+    player->argent -= 100000;
+    t_bat new;
+    new.x1 = case_actu.x1;
+    new.x2 = case_actu.x2;
+    new.y1 = case_actu.y1; // intialisation nouvelle case
+    new.y2 = case_actu.y2;
+    new.prix = 1000;
+    new.chateau = 1;
+    new.centrale = 0; // precise que c un chateau;
+    new.icone = batiment->water.iconeeau;
+    new.capacite = 5000;
+    if (player->propriete[0].prix != 1000)
+    {
+        player->propriete[0] = new;
+        player->nbpropriete = 1;
+        player->propriete[0].marqueur = timer;
+        printf("%d", player->propriete[0].x1);
+    }
+    else if (player->propriete[0].prix == 1000)
+    {
+        for (int i = 0; i < 30; i++)
+        {
 
-                t_bat new;
-                new.x1 = case_actu.x1;
-                new.x2 = case_actu.x2;
-                new.y1 = case_actu.y1; // intialisation nouvelle case
-                new.y2 = case_actu.y2;
-                strcpy(new.nom, batiment[0].nom);
-                new.prix = batiment[0].prix,
-                new.niveau = 0;
-                new.icone=batiment[0].icone;
-                new.habitant = batiment[0].habitant;
-                // printf("%d", player->propriete[0].prix);
-                if (player->propriete[0].prix != 1000)
-                {
-                    player->propriete[0] = new;
-                    player->nbpropriete = 1;
-                    player->propriete[0].marqueur = timer;
-                    printf("%d", player->propriete[0].x1);
-                }
-                else if (player->propriete[0].prix == 1000)
-                {
-                    for (int i = 0; i < 30; i++)
-                    {
+            if (player->propriete[i].prix != 1000)
+            { // condition verifiant si la propriete existe deja
+                t_bat *temp;
+                temp = player->propriete;
+                player->nbpropriete += 1;
+                player->propriete = (t_bat *)malloc(i * sizeof(t_bat));
+                player->propriete = temp;
+                player->propriete[i] = new;
+                i = 32;
+            }
+        }
+    }
+}
+int creation_centrale(t_joueur *player, t_case case_actu, t_bat *batiment, t_graphe *reseau)
+{
+    player->argent -= 100000;
+    t_bat new;
+    new.x1 = case_actu.x1;
+    new.x2 = case_actu.x2;
+    new.y1 = case_actu.y1; // intialisation nouvelle case
+    new.y2 = case_actu.y2;
+    new.prix = 1000;
+    new.chateau = 0;
+    new.centrale = 1; // precise que c un chateau;
+    new.icone = batiment->elec.iconeelec;
+    new.capacite = 5000;
+    if (player->propriete[0].prix != 1000)
+    {
+        player->propriete[0] = new;
+        player->nbpropriete = 1;
+        player->propriete[0].marqueur = timer;
+        printf("%d", player->propriete[0].x1);
+    }
+    else if (player->propriete[0].prix == 1000)
+    {
+        for (int i = 0; i < 30; i++)
+        {
 
-                        if (player->propriete[i].prix != 1000)
-                        { // condition verifiant si la propriete existe deja
-                            t_bat *temp;
-                            temp = player->propriete;
-                            player->nbpropriete += 1;
-                            player->propriete = (t_bat *)malloc(i * sizeof(t_bat));
-                            player->propriete = temp;
-                            player->propriete[i] = new;
-                            player->propriete[i].marqueur = timer;
-                            i = 32;
-                        }
-                    }
-                }
+            if (player->propriete[i].prix != 1000)
+            { // condition verifiant si la propriete existe deja
+                t_bat *temp;
+                temp = player->propriete;
+                player->nbpropriete += 1;
+                player->propriete = (t_bat *)malloc(i * sizeof(t_bat));
+                player->propriete = temp;
+                player->propriete[i] = new;
+                i = 32;
+            }
+        }
+    }
+}
+
+int creation_batiment(t_joueur *player, t_case case_actu, t_bat *batiment)
+{
+
+    player->argent -= 1000;
+
+    t_bat new;
+    new.x1 = case_actu.x1;
+    new.x2 = case_actu.x2;
+    new.y1 = case_actu.y1; // intialisation nouvelle case
+    new.y2 = case_actu.y2;
+    strcpy(new.nom, batiment[0].nom);
+    new.prix = batiment[0].prix,
+    new.centrale = 0;
+    new.chateau = 0;
+    new.niveau = 0;
+    new.icone = batiment[0].icone;
+    new.habitant = batiment[0].habitant;
+    // printf("%d", player->propriete[0].prix);
+    if (player->propriete[0].prix != 1000)
+    {
+        player->propriete[0] = new;
+        player->nbpropriete = 1;
+        player->propriete[0].marqueur = timer;
+        printf("%d", player->propriete[0].x1);
+    }
+    else if (player->propriete[0].prix == 1000)
+    {
+        for (int i = 0; i < 30; i++)
+        {
+
+            if (player->propriete[i].prix != 1000)
+            { // condition verifiant si la propriete existe deja
+                t_bat *temp;
+                temp = player->propriete;
+                player->nbpropriete += 1;
+                player->propriete = (t_bat *)malloc(i * sizeof(t_bat));
+                player->propriete = temp;
+                player->propriete[i] = new;
+                player->propriete[i].marqueur = timer;
+                i = 32;
+            }
+        }
+    }
 }
 
 int main()
@@ -395,19 +680,20 @@ int main()
     BITMAP *page;
     BITMAP *detection;
     BITMAP *accueil;
-    BITMAP* map;
+    BITMAP *map;
     int modedejeu = 0;
-
+    
     t_bat *batiment;
     batiment = (t_bat *)malloc(5 * sizeof(t_bat));
     t_graphe *reseau;
     reseau = (t_graphe *)malloc(1 * sizeof(t_graphe));
-    reseau->centrale=(t_electricite*)malloc(1*sizeof(t_electricite));
-    reseau->chateau=(t_eau*)malloc(1*sizeof(t_eau));
-    reseau->chaussee=(t_route*)malloc(1*sizeof(t_route));
+    reseau->centrale = (t_electricite *)malloc(1 * sizeof(t_electricite));
+    reseau->chateau = (t_eau *)malloc(1 * sizeof(t_eau));
+    reseau->chaussee = (t_route *)malloc(1 * sizeof(t_route));
     t_joueur *player;
     player = (t_joueur *)malloc(1 * sizeof(t_joueur));
     player->propriete = (t_bat *)malloc(1 * sizeof(t_bat));
+    player->bitume = (t_route*)malloc(1*sizeof(t_route));
     allegro_init();
     install_keyboard();
     install_mouse();
@@ -421,11 +707,11 @@ int main()
         exit(EXIT_FAILURE);
     }
     set_window_title("ECE City");
-
+    reseau->chaussee->iconeroute=(BITMAP**)malloc(15*sizeof(BITMAP*));
     accueil = load_bitmap("home.bmp", NULL);
     detection = create_bitmap(SCREEN_W, SCREEN_H);
     page = create_bitmap(SCREEN_W, SCREEN_H);
-    map=load_bitmap("ingame.bmp",NULL);
+    map = load_bitmap("ingame.bmp", NULL);
     clear_bitmap(page);
 
     rectfill(detection, 251, 479, 773, 545, makecol(255, 0, 0)); // NEW PARTIE
@@ -445,7 +731,7 @@ int main()
         show_mouse(screen);
         while (modedejeu == 0)
         {
-            modedejeu = menu(page, detection,accueil);
+            modedejeu = menu(page, detection, accueil);
         }
 
         clear_bitmap(detection);
@@ -460,14 +746,13 @@ int main()
 
             init_structure(batiment, reseau);
 
-            mode_capitaliste(page, detection, batiment, player,map,reseau);
+            mode_capitaliste(page, detection, batiment, player, map, reseau);
         }
         else if (modedejeu == 2)
         {
             // COMMUNISTE
             init_structure(batiment, reseau);
-            //mode_capitaliste(page, detection, batiment, player,map);
-        
+            // mode_capitaliste(page, detection, batiment, player,map);
         }
         else if (modedejeu == 3)
         {
