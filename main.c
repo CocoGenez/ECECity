@@ -346,7 +346,7 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                     {
                         case_actu.x1 = 0;
                         case_actu = detecterCase(plateau, page, batiment[0].icone, map, player);
-                        creation_batiment(player, case_actu, batiment,matriceJeu);
+                        //creation_batiment(player, case_actu, batiment,matriceJeu);
                         if (case_actu.x1 != 0)
                             condi = 1;
                     }
@@ -369,7 +369,7 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                         printf("/%d", condi2);
                         case_actu.x1 = 0;
                         case_actu = detecterCase(plateau, page, batiment->water.iconeeau, map, player);
-                        creation_chateau(player, case_actu, batiment, reseau,matriceJeu);
+                        //creation_chateau(player, case_actu, batiment, reseau,matriceJeu);
                         if (case_actu.x1 != 0)
                             condi2 = 1;
                     }
@@ -393,7 +393,7 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                         printf("/%d", condi3);
                         case_actu.x1 = 0;
                         case_actu = detecterCase(plateau, page, batiment->elec.iconeelec, map, player);
-                        creation_centrale(player, case_actu, batiment, reseau,matriceJeu);
+                        //creation_centrale(player, case_actu, batiment, reseau,matriceJeu);
                         if (case_actu.x1 != 0)
                             condi3 = 1;
                     }
@@ -424,8 +424,9 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                             case_actu = detecterCase(plateau, page, reseau->chaussee->iconeroute[trucpourrouler], map, player);
                             
                                 
-                            
-                            creation_route(player, case_actu, batiment, reseau, trucpourrouler,matriceJeu);
+                            if(verifOccupation(matriceJeu, case_actu, 3) == 1){
+                                creation_route(player, case_actu, batiment, reseau, trucpourrouler,matriceJeu);
+                            }
                             
                         }
                         
