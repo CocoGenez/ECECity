@@ -189,12 +189,12 @@ t_case detecterCase(t_case **plateau, BITMAP *page, BITMAP *batiment, BITMAP *ma
     {
         blit(map, page, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
         draw_sprite(page, batiment, mouse_x, mouse_y);
-        for (int z = 0; z < player->nbroute; z++){
-            printf("##%d##",player->nbroute);
+        for (int z = 0; z < player->nbroute; z++)
+        {
             draw_sprite(page, player->bitume[z].truc, player->bitume[z].x, player->bitume[z].y);
         }
-        for (int z = 0; z < player->nbpropriete; z++){
-            printf("||%d||",player->nbpropriete);
+        for (int z = 0; z < player->nbpropriete; z++)
+        {
             draw_sprite(page, player->propriete[z].icone, player->propriete[z].x1, player->propriete[z].y1);
         }
         blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
@@ -218,7 +218,7 @@ t_case detecterCase(t_case **plateau, BITMAP *page, BITMAP *batiment, BITMAP *ma
 void initcase(t_case **plateau)
 {
 
-    int depx1 = 124, depx2 = 20, depy1 = 0, depy2 = 20;
+    int depx1 = 124, depx2 = 144, depy1 = 0, depy2 = 20;
     for (int i = 0; i < 35; i++)
     {
         for (int j = 0; j < 45; j++)
@@ -231,37 +231,50 @@ void initcase(t_case **plateau)
             plateau[i][j].y2 = depy2;
         }
         depx1 = 124;
-        depx2 = 20;
+        depx2 = 144;
         depy1 += 20;
         depy2 += 20;
     }
 }
 
-int verifOccupation(int** matrice, t_case caseactu, int mode){
-    if(mode == 1){
-        for(int i=0; i<3; i++){
-            for(int j=0; j<3; j++){
-                if(matrice[(caseactu.y1/20)][(caseactu.x1-124)/20]==1){
+int verifOccupation(int **matrice, t_case caseactu, int mode)
+{
+    if (mode == 1)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                if (matrice[(caseactu.y1 / 20)][(caseactu.x1 - 124) / 20] != 0)
+                {
                     return 0;
                 }
-                caseactu.x1 +=20;
+                caseactu.x1 += 20;
             }
-            caseactu.y1 +=20;
+            caseactu.y1 += 20;
             caseactu.x1 -= 80;
         }
-    } else if(mode == 2){
-        for(int i=0; i<6; i++){
-            for(int j=0; j<4; j++){
-                if(matrice[(caseactu.y1/20)][(caseactu.x1-124)/20]==1){
+    }
+    else if (mode == 2)
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                if (matrice[(caseactu.y1 / 20)][(caseactu.x1 - 124) / 20] != 0)
+                {
                     return 0;
                 }
-                caseactu.x1 +=20;
+                caseactu.x1 += 20;
             }
-            caseactu.y1 +=20;
+            caseactu.y1 += 20;
             caseactu.x1 -= 80;
         }
-    } else if(mode == 3){
-        if(matrice[(caseactu.y1/20)][(caseactu.x1-124)/20]==1){
+    }
+    else if (mode == 3)
+    {
+        if (matrice[(caseactu.y1 / 20)][(caseactu.x1 - 124) / 20] != 0)
+        {
             return 0;
         }
     }
@@ -275,12 +288,14 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
 
     t_case case_actu;
     t_case **plateau;
-    int** matriceJeu;
-    matriceJeu = (int**)malloc(35*sizeof(int*));
+    int **matriceJeu;
+    matriceJeu = (int **)malloc(35 * sizeof(int *));
     for (int i = 0; i < 35; i++)
-        matriceJeu[i] = (int*)malloc(45*sizeof(int));
-    for(int i=0; i<35; i++){
-        for(int j=0;j<45;j++){
+        matriceJeu[i] = (int *)malloc(45 * sizeof(int));
+    for (int i = 0; i < 35; i++)
+    {
+        for (int j = 0; j < 45; j++)
+        {
             matriceJeu[i][j] = 0;
         }
     }
@@ -303,9 +318,11 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
     }
     timer = 0;
     int minutes = 0;
+    int secondes = 0;
     int condi = 0, condi2 = 0, condi3 = 0, condi4 = 0;
 
-    int marqueur = timer;
+    int marqueur1 = timer;
+    int marqueur2 = timer;
     int trucpourrouler;
     LOCK_FUNCTION(incrementer_timer);
     LOCK_VARIABLE(timer);
@@ -324,7 +341,7 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
         int couleurpixel;
         blit(map, page, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
         textprintf_centre_ex(page, font, 930, 726, makecol(0, 0, 0), -1, "%d :", minutes);
-        textprintf_centre_ex(page, font, 960, 726, makecol(0, 0, 0), -1, "%d", timer / 1000);
+        textprintf_centre_ex(page, font, 960, 726, makecol(0, 0, 0), -1, "%d", secondes);
         textprintf_centre_ex(page, font, 750, 726, makecol(0, 0, 0), -1, "%d ECEflouz", player->argent);
         textprintf_centre_ex(page, font, 250, 726, makecol(0, 0, 0), -1, "%d", player->nbhabitant);
         textprintf_centre_ex(page, font, 100, 500, makecol(255, 255, 255), -1, "souris : %d %d", mouse_x, mouse_y);
@@ -346,11 +363,12 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                     {
                         case_actu.x1 = 0;
                         case_actu = detecterCase(plateau, page, batiment[0].icone, map, player);
-                        //creation_batiment(player, case_actu, batiment,matriceJeu);
+                        // creation_batiment(player, case_actu, batiment,matriceJeu);
                         if (case_actu.x1 != 0)
                             condi = 1;
                     }
-                    if(verifOccupation(matriceJeu, case_actu, 1) == 1){
+                    if (verifOccupation(matriceJeu, case_actu, 1) == 1)
+                    {
                         creation_batiment(player, case_actu, batiment, matriceJeu);
                     }
                 }
@@ -369,13 +387,14 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                         printf("/%d", condi2);
                         case_actu.x1 = 0;
                         case_actu = detecterCase(plateau, page, batiment->water.iconeeau, map, player);
-                        //creation_chateau(player, case_actu, batiment, reseau,matriceJeu);
+                        // creation_chateau(player, case_actu, batiment, reseau,matriceJeu);
                         if (case_actu.x1 != 0)
                             condi2 = 1;
                     }
                     printf("/%d", condi2);
-                    if(verifOccupation(matriceJeu, case_actu, 2) == 1){
-                        creation_chateau(player,case_actu,batiment,reseau, matriceJeu);
+                    if (verifOccupation(matriceJeu, case_actu, 2) == 1)
+                    {
+                        creation_chateau(player, case_actu, batiment, reseau, matriceJeu);
                     }
                 }
                 else
@@ -393,12 +412,13 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                         printf("/%d", condi3);
                         case_actu.x1 = 0;
                         case_actu = detecterCase(plateau, page, batiment->elec.iconeelec, map, player);
-                        //creation_centrale(player, case_actu, batiment, reseau,matriceJeu);
+                        // creation_centrale(player, case_actu, batiment, reseau,matriceJeu);
                         if (case_actu.x1 != 0)
                             condi3 = 1;
                     }
                     printf("/%d", condi3);
-                    if(verifOccupation(matriceJeu, case_actu, 2) == 1){
+                    if (verifOccupation(matriceJeu, case_actu, 2) == 1)
+                    {
                         creation_centrale(player, case_actu, batiment, reseau, matriceJeu);
                     }
                 }
@@ -411,26 +431,22 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
             {
                 if (player->argent > reseau->chaussee->prix)
                 {
-                    
-                        
-                        while (condi4==0)
+
+                    while (condi4 == 0)
+                    {
+
+                        trucpourrouler = choix_panel(player, case_actu, batiment, reseau, map, page, panel, detection);
+                        if (trucpourrouler == 25)
+                            break;
+                        case_actu.x1 = 0;
+
+                        case_actu = detecterCase(plateau, page, reseau->chaussee->iconeroute[trucpourrouler], map, player);
+
+                        if (verifOccupation(matriceJeu, case_actu, 3) == 1)
                         {
-                            
-                            trucpourrouler = choix_panel(player, case_actu, batiment, reseau, map, page, panel, detection);
-                            if (trucpourrouler==25)
-                                break;
-                            case_actu.x1 = 0;
-                            
-                            case_actu = detecterCase(plateau, page, reseau->chaussee->iconeroute[trucpourrouler], map, player);
-                            
-                                
-                            if(verifOccupation(matriceJeu, case_actu, 3) == 1){
-                                creation_route(player, case_actu, batiment, reseau, trucpourrouler,matriceJeu);
-                            }
-                            
+                            creation_route(player, case_actu, batiment, reseau, trucpourrouler, matriceJeu);
                         }
-                        
-                    
+                    }
                 }
                 else
                 {
@@ -439,25 +455,35 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
             }
         }
         evolution_batiment(player, batiment, condition);
+        /*
         if (timer >= 60000)
         {
 
             timer = 0;
             marqueur = timer;
             minutes += 1;
+        }*/
+        if (timer - marqueur1 >= 1000)
+        {
+            marqueur1 = timer;
+            secondes += 1;
+        }
+        if (timer - marqueur2 >= 60000)
+        {
+            // timer = 0;
+            marqueur2 = timer;
+            secondes = 0;
+            minutes += 1;
         }
         for (int z = 0; z < player->nbroute; z++)
         {
-            
-            
+
             draw_sprite(page, player->bitume[z].truc, player->bitume[z].x, player->bitume[z].y);
-            
         }
         for (int z = 0; z < player->nbpropriete; z++)
             draw_sprite(page, player->propriete[z].icone, player->propriete[z].x1, player->propriete[z].y1);
         textprintf_centre_ex(page, font, 500, 300, makecol(255, 255, 255), -1, "%d - %d", case_actu.x1, case_actu.y1);
         blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-        
     }
     for (int i = 0; i < 35; i++)
         free(plateau[i]);
@@ -465,7 +491,7 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
 }
 int choix_panel(t_joueur *player, t_case case_actu, t_bat *batiment, t_graphe *reseau, BITMAP *map, BITMAP *page, BITMAP *panel, BITMAP *detection)
 {
-    int choix = 0,z;
+    int choix = 0, z;
     int couleurpixel;
     rectfill(detection, 148, 124, 188, 164, makecol(0, 0, 255));
     rectfill(detection, 201, 124, 241, 164, makecol(0, 0, 254));
@@ -482,21 +508,24 @@ int choix_panel(t_joueur *player, t_case case_actu, t_bat *batiment, t_graphe *r
     rectfill(detection, 148, 275, 188, 315, makecol(0, 0, 243));
     rectfill(detection, 201, 275, 241, 315, makecol(0, 0, 242));
     rectfill(detection, 148, 326, 188, 366, makecol(0, 0, 241));
-    while(choix==0){
+    while (choix == 0)
+    {
         blit(map, page, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
-        for (z = 0; z < player->nbpropriete; z++){
-            printf("---%dTT%d---",player->nbpropriete,z);
+        for (z = 0; z < player->nbpropriete; z++)
+        {
+            printf("---%dTT%d---", player->nbpropriete, z);
             draw_sprite(page, player->propriete[z].icone, player->propriete[z].x1, player->propriete[z].y1);
         }
 
-        for (z = 0; z < player->nbroute; z++){
-            
+        for (z = 0; z < player->nbroute; z++)
+        {
+
             draw_sprite(page, player->bitume[z].truc, player->bitume[z].x, player->bitume[z].y);
         }
         blit(panel, page, 0, 0, 124, 100, SCREEN_W, SCREEN_H);
         blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-        if(key[KEY_SPACE])
+        if (key[KEY_SPACE])
             return 25;
         if (mouse_b == 2)
         {
@@ -565,21 +594,20 @@ int choix_panel(t_joueur *player, t_case case_actu, t_bat *batiment, t_graphe *r
     }
 }
 
-int creation_route(t_joueur *player, t_case case_actu, t_route *route, t_graphe *reseau, int number, int** matrice)
+int creation_route(t_joueur *player, t_case case_actu, t_route *route, t_graphe *reseau, int number, int **matrice)
 {
     player->argent -= 10;
     t_route new;
     new.x = case_actu.x1;
     new.y = case_actu.y1;
-    matrice[(case_actu.y1/20)][(case_actu.x1-124)/20]=1;
+    matrice[(case_actu.y1 / 20)][(case_actu.x1 - 124) / 20] = 2;
 
     new.prix = 10;
-    new.truc= reseau->chaussee->iconeroute[number];
-     if (player->bitume[0].prix != 10)
+    new.truc = reseau->chaussee->iconeroute[number];
+    if (player->bitume[0].prix != 10)
     {
         player->bitume[0] = new;
         player->nbroute = 1;
-       
     }
     else if (player->bitume[0].prix == 10)
     {
@@ -588,12 +616,11 @@ int creation_route(t_joueur *player, t_case case_actu, t_route *route, t_graphe 
 
             if (player->bitume[i].prix != 10)
             { // condition verifiant si la propriete existe deja
-                
+
                 player->nbroute += 1;
                 player->bitume[i] = new;
                 player->bitume[i].prix = 10;
                 i = 202;
-                
             }
         }
     }
@@ -616,7 +643,7 @@ int evolution_batiment(t_joueur *player, t_bat *batiment, int *condition)
         }
     }
 }
-int creation_chateau(t_joueur *player, t_case case_actu, t_bat *batiment, t_graphe *reseau, int** matrice)
+int creation_chateau(t_joueur *player, t_case case_actu, t_bat *batiment, t_graphe *reseau, int **matrice)
 {
     player->argent -= 100000;
     t_bat new;
@@ -625,13 +652,15 @@ int creation_chateau(t_joueur *player, t_case case_actu, t_bat *batiment, t_grap
     new.y1 = case_actu.y1; // intialisation nouvelle case
     new.y2 = case_actu.y2;
 
-    for(int i=0; i<6; i++){
-        for(int j=0; j<4; j++){
-            matrice[(case_actu.y1/20)][(case_actu.x1-124)/20]=1;
-            printf("MATRICE %d - %d = %d\n", case_actu.y1/20, (case_actu.x1-124)/20, matrice[case_actu.y1/20][(case_actu.x1-124)/20]);
-            case_actu.x1 +=20;
+    for (int i = 0; i < 6; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            matrice[(case_actu.y1 / 20)][(case_actu.x1 - 124) / 20] = 1;
+            printf("MATRICE %d - %d = %d\n", case_actu.y1 / 20, (case_actu.x1 - 124) / 20, matrice[case_actu.y1 / 20][(case_actu.x1 - 124) / 20]);
+            case_actu.x1 += 20;
         }
-        case_actu.y1 +=20;
+        case_actu.y1 += 20;
         case_actu.x1 -= 80;
     }
 
@@ -654,16 +683,16 @@ int creation_chateau(t_joueur *player, t_case case_actu, t_bat *batiment, t_grap
 
             if (player->propriete[i].prix != 1000)
             { // condition verifiant si la propriete existe deja
-                
+
                 player->nbpropriete += 1;
-              
+
                 player->propriete[i] = new;
                 i = 32;
             }
         }
     }
 }
-int creation_centrale(t_joueur *player, t_case case_actu, t_bat *batiment, t_graphe *reseau, int** matrice)
+int creation_centrale(t_joueur *player, t_case case_actu, t_bat *batiment, t_graphe *reseau, int **matrice)
 {
     player->argent -= 100000;
     t_bat new;
@@ -672,13 +701,15 @@ int creation_centrale(t_joueur *player, t_case case_actu, t_bat *batiment, t_gra
     new.y1 = case_actu.y1; // intialisation nouvelle case
     new.y2 = case_actu.y2;
 
-    for(int i=0; i<6; i++){
-        for(int j=0; j<4; j++){
-            matrice[(case_actu.y1/20)][(case_actu.x1-124)/20]=1;
-            printf("MATRICE %d - %d = %d\n", case_actu.y1/20, (case_actu.x1-124)/20, matrice[case_actu.y1/20][(case_actu.x1-124)/20]);
-            case_actu.x1 +=20;
+    for (int i = 0; i < 6; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            matrice[(case_actu.y1 / 20)][(case_actu.x1 - 124) / 20] = 1;
+            printf("MATRICE %d - %d = %d\n", case_actu.y1 / 20, (case_actu.x1 - 124) / 20, matrice[case_actu.y1 / 20][(case_actu.x1 - 124) / 20]);
+            case_actu.x1 += 20;
         }
-        case_actu.y1 +=20;
+        case_actu.y1 += 20;
         case_actu.x1 -= 80;
     }
 
@@ -701,7 +732,7 @@ int creation_centrale(t_joueur *player, t_case case_actu, t_bat *batiment, t_gra
 
             if (player->propriete[i].prix != 1000)
             { // condition verifiant si la propriete existe deja
-                
+
                 player->nbpropriete += 1;
                 player->propriete[i] = new;
                 i = 32;
@@ -712,9 +743,52 @@ int creation_centrale(t_joueur *player, t_case case_actu, t_bat *batiment, t_gra
     }
 }
 
-int creation_batiment(t_joueur *player, t_case case_actu, t_bat *batiment, int** matrice)
+int check_connexion(t_case case_actu, int **matrice, int mode)
 {
-                
+    for (int i = 0; i < 3; i++)
+    {
+        printf("Cote haut : %d %d\n" ,(case_actu.y1-20) / 20, (case_actu.x1 - 124) / 20 );
+        if (matrice[(case_actu.y1-20) / 20][(case_actu.x1 - 124) / 20] == 2)
+        {
+            printf("TOUCHEEEE(1)");
+        }
+        case_actu.x1+=20;
+    } 
+
+    for (int j = 0; j < 3; j++)
+    {
+        printf("Cote droit : %d %d\n" ,(case_actu.y1) / 20, (case_actu.x1 - 124) / 20 );
+        if (matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20] == 2)
+        {
+            printf("TOUCHEEEEE(2)");
+        }
+        case_actu.y1+=20;
+    } 
+
+    for (int j = 0; j < 3; j++)
+    {
+         printf("Cote bas : %d %d\n" ,(case_actu.y1) / 20, (case_actu.x1 - 20 - 124) / 20 );
+        if (matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20] == 2)
+        {
+            printf("TOUCHEEEEE(3)");
+        }
+        case_actu.x1-=20;
+    } 
+
+    for (int j = 0; j < 3; j++)
+    {
+         printf("Cote gauche : %d %d\n" ,(case_actu.y1-20) / 20, (case_actu.x1 - 20 - 124) / 20 );
+        if (matrice[(case_actu.y1-20) / 20][(case_actu.x1 - 20 - 124) / 20] == 2)
+        {
+            printf("TOUCHEEEEE(4)");
+        }
+        case_actu.y1-=20;
+    } 
+}
+
+int creation_batiment(t_joueur *player, t_case case_actu, t_bat *batiment, int **matrice)
+{
+
     player->argent -= 1000;
 
     t_bat new;
@@ -723,15 +797,21 @@ int creation_batiment(t_joueur *player, t_case case_actu, t_bat *batiment, int**
     new.y1 = case_actu.y1; // intialisation nouvelle case
     new.y2 = case_actu.y2;
 
-    for(int i=0; i<3; i++){
-        for(int j=0; j<3; j++){
-            matrice[(case_actu.y1/20)][(case_actu.x1-124)/20]=1;
-            printf("MATRICE %d - %d = %d\n", case_actu.y1/20, (case_actu.x1-124)/20, matrice[case_actu.y1/20][(case_actu.x1-124)/20]);
-            case_actu.x1 +=20;
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            matrice[(case_actu.y1 / 20)][(case_actu.x1 - 124) / 20] = 1;
+            printf("MATRICE %d - %d = %d\n", case_actu.y1 / 20, (case_actu.x1 - 124) / 20, matrice[case_actu.y1 / 20][(case_actu.x1 - 124) / 20]);
+            case_actu.x1 += 20;
         }
-        case_actu.y1 +=20;
+        case_actu.y1 += 20;
         case_actu.x1 -= 60;
     }
+    case_actu.y1 = new.y1;
+    case_actu.x1 = new.x1;
+
+    check_connexion(case_actu, matrice, 0);
 
     strcpy(new.nom, batiment[0].nom);
     new.prix = batiment[0].prix,
@@ -755,9 +835,9 @@ int creation_batiment(t_joueur *player, t_case case_actu, t_bat *batiment, int**
 
             if (player->propriete[i].prix != 1000)
             { // condition verifiant si la propriete existe deja
-                
+
                 player->nbpropriete += 1;
-                
+
                 player->propriete[i] = new;
                 player->propriete[i].marqueur = timer;
                 i = 32;
