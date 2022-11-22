@@ -31,6 +31,7 @@ typedef struct route{
     int prix;
     struct route* next;
     BITMAP** iconeroute;
+    BITMAP* truc;
 
 }t_route;
 
