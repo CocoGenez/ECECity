@@ -13,7 +13,7 @@ typedef struct eau{
     struct eau* next;
     BITMAP* iconeeau;
 }t_eau;
-
+ 
 typedef struct electricite{
 
     int x1, x2, y1, y2;
