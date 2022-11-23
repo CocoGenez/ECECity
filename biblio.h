@@ -13,7 +13,7 @@ typedef struct eau{
     struct eau* next;
     BITMAP* iconeeau;
 }t_eau;
- 
+
 typedef struct electricite{
 
     int x1, x2, y1, y2;
@@ -32,6 +32,7 @@ typedef struct route{
     struct route* next;
     BITMAP** iconeroute;
     BITMAP* truc;
+    int id;
 
 }t_route;
 
@@ -45,6 +46,8 @@ typedef struct batiment{
     int marqueur;
     int prix;
     int habitant;
+    int id;
+    int reel;
     char nom[20];
     BITMAP* icone;
     int chateau;
@@ -56,6 +59,21 @@ typedef struct batiment{
 
 }t_bat;
 
+
+
+struct Arc
+{
+    int sommet; // numéro de sommet d'un arc adjacent au sommet initial
+    int poids;
+    struct Arc* arc_suivant;
+};
+typedef struct Arc* pArc;
+struct Sommet
+{
+    struct Arc* arc;
+    int valeur;
+};
+typedef struct Sommet* pSommet;
 typedef struct Graphe{
 
     struct eau* chateau;
@@ -64,9 +82,12 @@ typedef struct Graphe{
     BITMAP* water;
     BITMAP* road;
     BITMAP* elec;
+    int taille;
+    int ordre;
+    int** matricepoids;
+    pSommet* pSommet;
 
 }t_graphe;
-
 typedef struct joueur{
 
     int argent;
@@ -81,6 +102,6 @@ typedef struct joueur{
 typedef struct pol{
     int x1,x2,y1,y2;
 }t_case;
-
-
+t_graphe* CreerGraphe(int ordre);
+pSommet* CreerArete(pSommet* sommet,int s1,int s2,int poids,int** matrice);
 #endif // BIBLIO_H_INCLUDED
