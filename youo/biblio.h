@@ -5,14 +5,13 @@
 #include <allegro.h>
 #include <string.h>
 #define MODE   GFX_AUTODETECT_WINDOWED
-
 typedef struct eau{
 
     int x1, x2, y1, y2;
-    unsigned int capacite;
+    int capacite;
     int prix;
     struct eau* next;
-
+    BITMAP* iconeeau;
 }t_eau;
 
 typedef struct electricite{
@@ -21,6 +20,7 @@ typedef struct electricite{
     int capacite;
     int prix;
     struct electricite* next;
+    BITMAP* iconeelec;
 
 }t_electricite;
 
@@ -30,6 +30,9 @@ typedef struct route{
     int y;
     int prix;
     struct route* next;
+    BITMAP** iconeroute;
+    BITMAP* truc;
+    int r_num;//pour associer chaque bitmap a un numéro
 
 }t_route;
 
@@ -45,6 +48,10 @@ typedef struct batiment{
     int habitant;
     char nom[20];
     BITMAP* icone;
+    int b_num;//pour associer chaque bitmap a un numéro
+    int chateau;
+    int centrale;
+    int capacite;
     struct eau water;
     struct electricite elec;
     struct route road;
@@ -53,12 +60,14 @@ typedef struct batiment{
 
 typedef struct Graphe{
 
-    struct eau chateau;
-    struct electricite centrale;
-    struct route chaussee;
+    struct eau* chateau;
+    struct electricite* centrale;
+    struct route* chaussee;
+    BITMAP* water;
+    BITMAP* road;
+    BITMAP* elec;
 
 }t_graphe;
-
 
 typedef struct joueur{
 
@@ -66,12 +75,16 @@ typedef struct joueur{
     t_bat* propriete;
     int nbhabitant;
     int nbpropriete;
+    int nbroute;
+    t_route* bitume;
 
 }t_joueur;
 
 typedef struct pol{
     int x1,x2,y1,y2;
 }t_case;
+
+
 void initialisation_allegro();
 BITMAP * creer_Bitmap(int width,int height);
 BITMAP * charger_Bitmap(const char*chemin);
@@ -79,5 +92,8 @@ int menu(BITMAP *page, BITMAP *detection,BITMAP* accueil);
 int nouvellepartie(BITMAP *page, BITMAP *detection,BITMAP* accueil);
 void initcase(t_case **plateau);
 void init_structure(t_bat *batiment, t_graphe *reseau);
+void musique(SAMPLE* music);
+int menu_pause();
+void sauvegarde(t_joueur* batiment);
 
 #endif // BIBLIO_H_INCLUDED
