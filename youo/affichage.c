@@ -7,9 +7,9 @@ int menu(BITMAP *page, BITMAP *detection,BITMAP* accueil)
     rectfill(detection, 251, 479, 773, 545, makecol(255, 0, 0)); // NEW PARTIE
     rectfill(detection, 251, 559, 773, 625, makecol(0, 255, 0)); // CHARGER
     rectfill(detection, 251, 638, 773, 704, makecol(0, 0, 255)); // QUITTER
-
+    t_joueur *player;
     int modedejeu = 0;
-    int couleurpixel;   
+    int couleurpixel;
     while (!key[KEY_ESC])
     {
         blit(accueil, page, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
@@ -26,12 +26,13 @@ int menu(BITMAP *page, BITMAP *detection,BITMAP* accueil)
             }
             if (getr(couleurpixel) == 0 && getg(couleurpixel) == 255 && getb(couleurpixel) == 0)
             {
-
-                return modedejeu = 3;
+                charger_sauvegarde(player);
+                modedejeu = nouvellepartie(page, detection,accueil);
+                return modedejeu ;
             }
             if (getr(couleurpixel) == 0 && getg(couleurpixel) == 0 && getb(couleurpixel) == 255)
             {
-                exit(1);
+                exit(EXIT_FAILURE);
             }
         }
     }
@@ -94,3 +95,39 @@ int nouvellepartie(BITMAP *page, BITMAP *detection,BITMAP* accueil)
     }
     return 0;
 }
+/*** menu pause a finir ***/
+int menu_pause()
+{
+    clear_bitmap(screen);
+    BITMAP *pause;
+    pause = creer_Bitmap(SCREEN_W,SCREEN_H);
+    int retour_jeu = 1;
+    rest(100);
+    while (retour_jeu != 0 )
+    {
+
+        show_mouse(pause);
+        blit(pause,screen,0,0,0,0,SCREEN_W,SCREEN_H);
+        rectfill(pause, 250, 200, 550, 250, makecol(255,255,255));
+        rectfill(pause, 250, 300, 550, 350, makecol(255,255,255));
+        rectfill(pause, 250, 400, 550, 450, makecol(255,255,255));
+        textprintf_ex(pause,font,300,225,makecol(0,0,0),-1,"Reprendre Partie");
+        textprintf_ex(pause,font,300,325,makecol(0,0,0),-1,"sauvegarder");
+        textprintf_ex(pause,font,300,425,makecol(0,0,0),-1,"Revenir au menu Principale");
+        if (mouse_b == 2 && ((mouse_x>250)&&(mouse_x<550))&&(mouse_y>200)&&(mouse_y<250) )
+        {
+            return 3;
+        }
+        if (mouse_b == 2 && ((mouse_x>250)&&(mouse_x<550))&&(mouse_y>300)&&(mouse_y<350) )
+        {
+            //sauvegarder la partie
+        }
+        if (mouse_b == 2 && ((mouse_x>250)&&(mouse_x<550))&&(mouse_y>400)&&(mouse_y<450) )
+        {
+            return 1;
+        }
+
+    }
+    return 0;
+}
+
