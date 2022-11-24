@@ -289,6 +289,8 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
     t_case case_actu;
     t_case **plateau;
     int **matriceJeu;
+    int* prev;
+    prev=(int*)malloc(200*sizeof(int));
     matriceJeu = (int **)malloc(35 * sizeof(int *));
     for (int i = 0; i < 35; i++)
         matriceJeu[i] = (int *)malloc(45 * sizeof(int));
@@ -486,10 +488,19 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
         blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
         for (int i=1; i<player->nbpropriete+player->nbroute+1; i++)
     {
-        afficher_successeurs(g->pSommet, i);
-        printf("\n");
+        //afficher_successeurs(g->pSommet, i);
+        //printf("\n");
     }
-        
+    
+    for(int z=0;z<player->nbpropriete;z++){
+        if(g->pSommet[z]->arc!=NULL ||g->pSommet[g->pSommet[z]->arc->sommet]->arc!=NULL){
+        if(player->propriete[z].reel==1){
+            prev=bfs(g,player->propriete[z].id,player) ;
+            affichage_bfs_chateau(g,prev,player);
+        }
+        }
+    }
+    
     }
     /*for (int i = 0; i < 35; i++)
         free(plateau[i]);
@@ -1020,6 +1031,110 @@ int creation_batiment(t_joueur *player, t_case case_actu, t_bat *batiment, int *
 
     check_connexion(case_actu, matrice, 0, g);
 }
+int* bfs(t_graphe* g, int s0,t_joueur*player)
+{
+    for(int i=0; i<player->nbpropriete+player->nbroute; i++)
+        g->pSommet[i]->couleur=0; // on demarque tous les sommets
+    int *prev=(int*)malloc(200*sizeof(int));
+    for(int i=0; i<player->nbpropriete+player->nbroute; i++)
+        prev[i]=-1;
+    FileM f;
+    f.tete=f.fin=NULL;
+    enfiler(&f, s0);
+    g->pSommet[s0]->couleur=1;
+
+    while(f.tete!=NULL)
+    {
+        int num=defiler(&f);
+        struct Arc* temp=g->pSommet[num]->arc;
+        while(temp!=NULL)
+        {
+            //on récupère le numéro du sommet relié par l'arc
+            int num2=temp->sommet;
+            //si ce sommet n'est pas marqué
+            if(g->pSommet[num2]->couleur==0)
+            {
+                enfiler(&f,num2);
+                g->pSommet[num2]->couleur=1;
+                prev[num2]=num;
+            }
+            temp=temp->arc_suivant;
+
+        }
+    }
+    return prev;
+}
+
+void affichage_bfs_chateau(t_graphe* g, int* prev,t_joueur*player)
+{
+    int temp;
+    int i;
+    for(i=0; i<player->nbpropriete+player->nbroute; i++)
+    {
+        if(prev[i]!=-1&&player->propriete[i].chateau==1) // c'est un chateau
+        {
+            printf("\n%d",i); ///Affiche les sommets enregistrés dans le tableau tant que les cases ne sont pas "vides"
+            temp=prev[i];
+            while(temp!=-1)
+            {
+                printf("<-%d", temp);
+                temp=prev[temp];
+            }
+        }
+    }
+
+}
+
+void enfiler(FileM *file, int nouv)
+{
+    Maillon *next = malloc(sizeof(*next));
+    if (file == NULL || next == NULL)
+    {
+        exit(EXIT_FAILURE);
+    }
+
+    next->num = nouv;
+    next->suiv = NULL;
+
+    if (file->tete != NULL) /* La file n'est pas vide */
+    {
+        /* On se positionne à la fin de la file */
+        Maillon *actu = file->tete;
+        while (actu->suiv != NULL)
+        {
+            actu = actu->suiv;
+        }
+        actu->suiv = next;
+    }
+    else /* La file est vide, notre élément est le tete */
+    {
+        file->tete = next;
+    }
+}
+
+int defiler(FileM *file)
+{
+    if (file == NULL)
+    {
+        exit(EXIT_FAILURE);
+    }
+
+    int cptFile = 0;
+
+    /* On vérifie s'il y a quelque chose à défiler */
+    if (file->tete != NULL)
+    {
+        Maillon *element = file->tete;
+
+        cptFile = element->num;
+        file->tete = element->suiv;
+        free(element);
+    }
+
+    return cptFile;
+}
+
+
 t_graphe *init_graphe(t_graphe *g, t_joueur *player)
 {
 

@@ -72,6 +72,7 @@ struct Sommet
 {
     struct Arc* arc;
     int valeur;
+    int couleur;
 };
 typedef struct Sommet* pSommet;
 typedef struct Graphe{
@@ -102,6 +103,22 @@ typedef struct joueur{
 typedef struct pol{
     int x1,x2,y1,y2;
 }t_case;
+typedef struct maillon{
+    //numéro du sommet
+    int num;
+    //pointeur sur la maillon suivant
+    struct maillon*suiv;
+}Maillon;
+
+//structure regroupant les ancres de tete et de fin de liste
+typedef struct file{
+    Maillon*tete; //pointeur sur le premier maillon
+    Maillon*fin; //pointeur sur le dernier maillon
+}FileM;
+
+
 t_graphe* CreerGraphe(int ordre);
 pSommet* CreerArete(pSommet* sommet,int s1,int s2,int poids,int** matrice);
+int* bfs(t_graphe* graphe, int s,t_joueur* player);
+void affichage_bfs_chateau(t_graphe* graphe, int* pred,t_joueur* player);
 #endif // BIBLIO_H_INCLUDED
