@@ -681,7 +681,7 @@ int creation_route(t_joueur *player, t_case case_actu, t_route *route, t_graphe 
         player->bitume[0] = new;
         player->bitume[0].id = player->nbpropriete + player->nbroute;
         printf("%d",player->bitume[0].id);
-        new.id = player->nbpropriete + player->nbroute;
+        shesh = player->nbpropriete + player->nbroute;
     }
     else if (player->bitume[0].prix == 10)
     {
