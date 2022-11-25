@@ -444,7 +444,9 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
         printf("\nNb chateau : %d / Nb centrale : %d / Nb maison : %d", castle, electric, home);
         for (int i = 0; i < home; i++) {
             for (int j = 0; j < castle; j++) {
+                printf("IDDD:%d",maisons[i].id);
                 distance_chateau[i][j] = alimentation(player, g, maisons[i].id, chateau[j].id);
+                
                 printf("Distance chateau i j : %d\n", distance_chateau[i][j]);
                 // distance_chateau[i][j] = algoDijkstra(g->ordre, maisons[i].id, chateau[j].id);
             }
@@ -453,6 +455,12 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
         for (int i = 1; i < player->nbpropriete + player->nbroute; i++) {
             // afficher_successeurs(g->pSommet, i);
             // printf("\n");
+        }
+        for(int i=0;i<10;i++){
+            for(int j=0;j<10;j++){
+               // printf("%d\t",g->matricepoids[i][j]);
+            }
+            //printf("\n");
         }
     }
     /*for (int i = 0; i < 35; i++)
@@ -517,6 +525,7 @@ int alimentation(t_joueur *player, t_graphe *g, int debut, int fin) {
     for (int k = 0; k < taille; k++) {
         select[k] = 0;
     }
+    
     int distance[taille], prev[taille], i, m, minimum, start, d, j = 0;
     int chemin[taille];  /// initialisation des différentes variables
     for (i = 0; i < taille; i++) {
@@ -526,30 +535,44 @@ int alimentation(t_joueur *player, t_graphe *g, int debut, int fin) {
     start = debut;
     select[start] = 1;
     distance[start] = 0;
-    while (select[fin] == 0) {  // Tant que le sommet de fin n'est pas marqué on effectue la boucle
+    printf("START: %d[[[",start);
+    while (select[fin] == 0) {
+         // Tant que le sommet de fin n'est pas marqué on effectue la boucle
         minimum = 1000;
         m = 0;
         for (i = 1; i < taille; i++) {
-            d = distance[start] + g->matricepoids[start][i];    /// on additionne les poids de chaque arrete au fur et a mesure du parcours
+            //printf("MATRICE:%d/%d :%d",start,fin,g->matricepoids[start][fin]);
+            if(start!=i ){
+            d = distance[start] + g->matricepoids[start][i];
+            printf("\nSTART: %d \t I: %d \t g->matricepoids: %d\n",start,i,g->matricepoids[start][i]);
+            //printf("\nDISTANCE: I : %d\n d: %d",distance[i],d);    /// on additionne les poids de chaque arrete au fur et a mesure du parcours
             if (d < distance[i] && select[i] == 0 && d != 0) {  /// Si le poids est inferieur au poids de ref(99) on associe les grandeurs
                 distance[i] = d;
-                prev[i] = g->pSommet[start]->arc->sommet;
+                prev[i] = start;
+                
             }
+            
 
             if (minimum > distance[i] && select[i] == 0 && d != 0) {  /// si le minimum est superieur alors on prend ce chemin et on redefinit le minimum
                 minimum = distance[i];
                 m = i;  /// On choisit alors ce chemin puis on l'assigne cid essous à start pour marquer le bon sommet.
             }
         }
-        if (select[fin] == 0) {
-            break;
-        }
+        
+        
+        
         start = m;
         select[start] = 1;
+        
+        
+        
+        }
+
     }
 
     while (start != -1) {
         chemin[j] = start;
+       
         start = prev[start];  /// Tant que on est pas arrive au sommet original on continue de remplir le tableau.
         j++;
     }
@@ -1079,12 +1102,12 @@ t_graphe *init_graphe(t_graphe *g, t_joueur *player) {
     int ordre = 1000;
     g = CreerGraphe(ordre);  // créer le graphe d'ordre sommets
     g->ordre = player->nbpropriete + player->nbroute;
-    g->matricepoids = (int **)malloc(400 * sizeof(int *));
-    for (int i = 0; i < 400; i++) {
-        g->matricepoids[i] = (int *)malloc(400 * sizeof(int));
-        for (int j = 0; j < g->ordre; j++) {
+    g->matricepoids = (int **)malloc(45 * sizeof(int *));
+    for (int i = 0; i < 45; i++) {
+        g->matricepoids[i] = (int *)malloc(45 * sizeof(int));
+        for (int j = 0; j < 45; j++) {
             g->matricepoids[i][j] = 0;
-            printf("%d", g->matricepoids[i][j]);
+            //printf("%d", g->matricepoids[i][j]);
         }
     }
 
