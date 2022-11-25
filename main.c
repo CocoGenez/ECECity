@@ -905,6 +905,7 @@ int creation_route(t_joueur *player, t_case case_actu, t_route *route, t_graphe 
 }
 int evolution_batiment(t_joueur *player, t_bat *batiment, int *condition)
 {
+
     for (int z = 0; z < player->nbpropriete; z++)
     {
         // printf("%d : %d \n", z, player->propriete[z].niveau);
@@ -917,9 +918,23 @@ int evolution_batiment(t_joueur *player, t_bat *batiment, int *condition)
             player->nbhabitant += batiment[player->propriete[z].niveau + 1].habitant - batiment[player->propriete[z].niveau].habitant;
             player->propriete[z].niveau += 1;
             player->propriete[z].marqueur = timer;
+            player->argent = player->argent + player->propriete[z].habitant * 10;
             condition[z] = 1;
+            return 1;
         }
+
+        if (timer - player->propriete[z].marqueur >= 15000 && player->propriete[z].niveau == 4 && condition[z] == 0 && player->propriete[z].centrale == 0 && player->propriete[z].chateau == 0)
+        {
+            player->propriete[z].habitant = batiment[player->propriete[z].niveau].habitant;
+            player->nbhabitant += batiment[player->propriete[z].niveau].habitant - batiment[player->propriete[z].niveau].habitant;
+            player->propriete[z].marqueur = timer;
+            player->argent = player->argent + player->propriete[z].habitant * 10;
+            condition[z] = 1;
+            return 1;
+        }
+
     }
+    return 0;
 }
 int check_connexion_centrale(t_case case_actu, int **matrice, int mode, t_graphe *g)
 {
