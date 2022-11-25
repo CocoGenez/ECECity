@@ -328,14 +328,12 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
             if (getr(couleurpixel) == 253 && getg(couleurpixel) == 0 && getb(couleurpixel) == 0) {
                 if (player->argent > reseau->chateau->prix) {
                     while (condi2 == 0) {
-                        printf("/%d", condi2);
                         case_actu.x1 = 0;
                         case_actu = detecterCase(plateau, page, batiment->water.iconeeau, map, player);
                         // creation_chateau(player, case_actu, batiment, reseau,matriceJeu);
                         if (case_actu.x1 != 0)
                             condi2 = 1;
                     }
-                    printf("/%d", condi2);
                     if (verifOccupation(matriceJeu, case_actu, 2) == 1) {
                         creation_chateau(player, case_actu, batiment, reseau, matriceJeu, g);
                     }
@@ -346,14 +344,12 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
             if (getr(couleurpixel) == 251 && getg(couleurpixel) == 0 && getb(couleurpixel) == 0) {
                 if (player->argent > reseau->centrale->prix) {
                     while (condi3 == 0) {
-                        printf("/%d", condi3);
                         case_actu.x1 = 0;
                         case_actu = detecterCase(plateau, page, batiment->elec.iconeelec, map, player);
                         // creation_centrale(player, case_actu, batiment, reseau,matriceJeu);
                         if (case_actu.x1 != 0)
                             condi3 = 1;
                     }
-                    printf("/%d", condi3);
                     if (verifOccupation(matriceJeu, case_actu, 2) == 1) {
                         creation_centrale(player, case_actu, batiment, reseau, matriceJeu, g);
                     }
@@ -408,8 +404,8 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
         blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
         int **distance_chateau;
-        distance_chateau = (int **)malloc(player->nbpropriete + player->nbroute * sizeof(int *));
-        for (int i = 0; i < player->nbpropriete + player->nbroute; i++) {
+        distance_chateau = (int **)malloc((player->nbpropriete + player->nbroute) * sizeof(int *));
+        for (int i = 0; i < (player->nbpropriete + player->nbroute); i++) {
             distance_chateau[i] = (int *)malloc(sizeof(int));
         }
         t_bat *maisons;
@@ -441,20 +437,23 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                 electric += 1;
             }
         }
-        printf("\nNb chateau : %d / Nb centrale : %d / Nb maison : %d", castle, electric, home);
+        //printf("\nNb chateau : %d / Nb centrale : %d / Nb maison : %d", castle, electric, home);
+
         for (int i = 0; i < home; i++) {
             for (int j = 0; j < castle; j++) {
-                printf("IDDD:%d",maisons[i].id);
-                distance_chateau[i][j] = alimentation(player, g, maisons[i].id, chateau[j].id);
+                printf("IDDD maison :%d /// IDDD chateau : %d",maisons[i].id, chateau[j].id);
+                printf("\nORDRE : %d\n", player->nbpropriete + player->nbroute);
+
+                //distance_chateau[i][j] = alimentation(player, g, maisons[i].id, chateau[j].id);
+                distance_chateau[i][j] = algoDijkstra(g->matricepoids, maisons[i].id, chateau[j].id, player->nbpropriete + player->nbroute + 1);
                 
-                printf("Distance chateau i j : %d\n", distance_chateau[i][j]);
+                printf("Distance chateau %d - %d : %d\n", i, j, distance_chateau[i][j]);
                 // distance_chateau[i][j] = algoDijkstra(g->ordre, maisons[i].id, chateau[j].id);
             }
         }
-
-        for (int i = 1; i < player->nbpropriete + player->nbroute; i++) {
-            // afficher_successeurs(g->pSommet, i);
-            // printf("\n");
+        for (int i = 1; i < player->nbpropriete + player->nbroute + 1; i++) {
+            //afficher_successeurs(g->pSommet, i);
+            //printf("\n");
         }
         for(int i=0;i<10;i++){
             for(int j=0;j<10;j++){
@@ -468,55 +467,67 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
     free(plateau);*/
 }
 
-int algoDijkstra(int source, int target, int ordre) {
-    int m, min, debut, d, j;
-    int dist[ordre], prev[ordre];
-    int chemin[ordre];
-    int choisi[ordre];
-    for (int i = 0; i < ordre; i++) {
-        choisi[i] = 0;
+int algoDijkstra(int** matrice,int debut,int fin, int ordre)
+{
+    int min,d,m = 0,j = 0; // min = cout minimal, d = cout actuel, m : sommet suivant
+    int cout[ordre];
+    int chemin[ordre]; // tableau des sommets du chemin
+    int preds[ordre];
+    int marque[ordre]; // 1 si sommet explore, sinon 0
+    for(int i=0; i<ordre; i++){
+        marque[i] = 0; // on initialise les sommets comme non-marques
     }
-    for (int i = 0; i < ordre; i++) {
-        dist[i] = 99;
-        prev[i] = -1;
+    for(int i=0;i<ordre;i++)
+    {
+        cout[i] = 99; // on marque tous les sommets a un cout infini (ici 99)
+        preds[i] = -1; // on marque les predecesseurs de chaque sommet à -1
     }
-    debut = source;
-    choisi[debut] = 1;
-    dist[debut] = 0;
-    while (choisi[target] == 0) {
-        min = 99;
-        m = 0;
-        for (int i = 0; i < ordre; i++) {
-            d = dist[debut] + 1;
-            if (d < dist[i] && choisi[i] == 0) {
-                dist[i] = d;
-                prev[i] = debut;
+    marque[debut] = 1;
+    cout[debut] = 0;
+
+    printf("marque[fin] = %d", marque[fin]);
+    while(marque[fin] == 0) // tant qu'on n'a pas explore le sommet de fin
+    {
+        min = 99; // cout minimal = infini
+        for(int i=0;i< ordre;i++) // parcours de tous les sommets
+        {
+            d = cout[debut] + matrice[debut][i]; // cout actuel = cout jusqu'a present + cout vers sommet i
+            printf("MATRICE [%d] [%d] : %d\n", debut, i, matrice[debut][i]);
+            if(d<cout[i] && marque[i]==0) // si cout actuel < cout vers sommet i et si sommet i n'est pas explore
+            {
+                cout[i] = d; // cout vers sommet i = cout actuel
+                preds[i] = debut; // predecesseur de i = sommet explore actuellement
             }
-            if (min > dist[i] && choisi[i] == 0) {
-                min = dist[i];
-                m = i;
+            if(min>cout[i] && marque[i]==0) // si cout minimal > cout vers sommet i et si sommet i n'est pas explore
+            {
+                min = cout[i]; // cout minimal = cout vers sommet i
+                m = i; // sommet suivant = sommet i
             }
         }
-        debut = m;
-        choisi[debut] = 1;
-    }
-    debut = target;
-    j = 0;
-    while (debut != -1) {
-        chemin[j] = debut;
-        debut = prev[debut];
-        j += 1;
+        debut = m; // on passe au sommet suivant
+        marque[debut] = 1; // le sommet suivant est explore
     }
 
+    debut = fin; // on commence par la fin du chemin
+    while(debut != -1) // tant qu'il reste au moins un predecesseur
+    {
+        chemin[j] = debut; // on ajoute le sommet parcouru au chemin
+        printf("preds[debut] = %d\n", preds[debut]);
+        debut = preds[debut]; // on passe au sommet precedent
+        j+=1;
+    }
+
+    // affichage du chemin
     printf("\n");
-    for (int i = j - 1; i >= 0; i--) {
-        if (i == 0) {
+    for(int i=j-1; i>=0; i--){
+        if(i == 0){
             printf("%d", chemin[i]);
-        } else {
-            printf("%d <-- ", chemin[i]);
+        }
+        else{
+           printf("%d <-- ", chemin[i]);
         }
     }
-    return dist[target];
+    return cout[fin]; // on retourne le cout du chemin
 }
 
 int alimentation(t_joueur *player, t_graphe *g, int debut, int fin) {
@@ -682,47 +693,30 @@ int choix_panel(t_joueur *player, t_case case_actu, t_bat *batiment, t_graphe *r
     }
 }
 int check_connexion_route(t_case case_actu, int **matrice, int mode, t_graphe *g) {
-    for (int i = 0; i < 1; i++) {
-        printf("Cote haut : %d %d\n", (case_actu.y1 - 20) / 20, (case_actu.x1 - 124) / 20);
-        if (matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20] != 0) {
-            printf("TOUCHEEEE(1)");
-            printf("%d", matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20]);
-            g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20], matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20], 1, g->matricepoids);
-            g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20], matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20], 1, g->matricepoids);
-        }
-        case_actu.x1 += 20;
+    
+    if (matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20] != 0) {
+        g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20], matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20], 1, g->matricepoids);
+        g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20], matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20], 1, g->matricepoids);
     }
+    case_actu.x1 += 20;
 
-    for (int j = 0; j < 1; j++) {
-        printf("Cote droit : %d %d\n", (case_actu.y1) / 20, (case_actu.x1 - 124) / 20);
-        if (matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20] != 0) {
-            printf("TOUCHEEEEE(2)");
-            g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20], matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20], 1, g->matricepoids);
-            g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20], matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20], 1, g->matricepoids);
-        }
-        case_actu.y1 += 20;
+    if (matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20] != 0) {
+        g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20], matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20], 1, g->matricepoids);
+        g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20], matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20], 1, g->matricepoids);
     }
+    case_actu.y1 += 20;
 
-    for (int j = 0; j < 1; j++) {
-        printf("Cote bas : %d %d\n", (case_actu.y1) / 20, (case_actu.x1 - 20 - 124) / 20);
-        if (matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20] != 0) {
-            printf("TOUCHEEEEE(3)");
-            g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 20 - 124) / 20], matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20], 1, g->matricepoids);
-            g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20], matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 20 - 124) / 20], 1, g->matricepoids);
-        }
-        case_actu.x1 -= 20;
+    if (matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20] != 0) {
+        g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 20 - 124) / 20], matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20], 1, g->matricepoids);
+        g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20], matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 20 - 124) / 20], 1, g->matricepoids);
     }
+    case_actu.x1 -= 20;
 
-    for (int j = 0; j < 1; j++) {
-        printf("Cote gauche : %d %d\n", (case_actu.y1 - 20) / 20, (case_actu.x1 - 20 - 124) / 20);
-        if (matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 20 - 124) / 20] != 0) {
-            printf("TOUCHEEEEE(4)");
-            printf("%d", matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20]);
-            g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20], matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 20 - 124) / 20], 1, g->matricepoids);
-            g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 20 - 124) / 20], matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20], 1, g->matricepoids);
-        }
-        case_actu.y1 -= 20;
+    if (matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 20 - 124) / 20] != 0) {
+        g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20], matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 20 - 124) / 20], 1, g->matricepoids);
+        g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 20 - 124) / 20], matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20], 1, g->matricepoids);
     }
+    case_actu.y1 -= 20;
 }
 int creation_route(t_joueur *player, t_case case_actu, t_route *route, t_graphe *reseau, int number, int **matrice, t_graphe *g) {
     int shesh;
@@ -872,33 +866,19 @@ int creation_centrale(t_joueur *player, t_case case_actu, t_bat *batiment, t_gra
     new.y1 = case_actu.y1;  // intialisation nouvelle case
     new.y2 = case_actu.y2;
 
-    case_actu.y1 = new.y1;
-    case_actu.x1 = new.x1;
-
-    new.prix = 1000;
+    new.prix = 100000;
     new.chateau = 0;
-    new.centrale = 1;  // precise que c un chateau;
+    new.centrale = 1;  // precise que c'est une centrale;
     new.icone = batiment->elec.iconeelec;
     new.capacite = 5000;
-    if (player->propriete[0].prix != 1000) {
-        player->propriete[0] = new;
-        player->nbpropriete = 1;
-        player->propriete[0].id = player->nbpropriete + player->nbroute;
-        player->propriete[0].reel = 1;
-        new.id = player->nbpropriete + player->nbroute;
-        player->propriete[0].marqueur = timer;
-        printf("%d", player->propriete[0].x1);
-    } else if (player->propriete[0].prix == 1000) {
-        for (int i = 0; i < 30; i++) {
-            if (player->propriete[i].prix != 1000) {  // condition verifiant si la propriete existe deja
-                player->nbpropriete += 1;
-
-                player->propriete[i].reel = 1;
-                player->propriete[i] = new;
-                player->propriete[i].id = player->nbpropriete + player->nbroute;
-                shesh = player->propriete[i].id;
-                i = 32;
-            }
+    for (int i = 0; i < 30; i++) {
+        if (player->propriete[i].prix != 1000 && player->propriete[i].prix != 100000) {  // condition verifiant si la propriete existe deja
+            player->nbpropriete += 1;
+            player->propriete[i].reel = 1;
+            player->propriete[i] = new;
+            player->propriete[i].id = player->nbpropriete + player->nbroute;
+            shesh = player->propriete[i].id;
+            i = 32;
         }
     }
     for (int i = 0; i < 6; i++) {
@@ -973,28 +953,16 @@ int creation_batiment(t_joueur *player, t_case case_actu, t_bat *batiment, int *
     new.niveau = 0;
     new.icone = batiment[0].icone;
     new.habitant = batiment[0].habitant;
-    // printf("%d", player->propriete[0].prix);
-    if (player->propriete[0].prix != 1000) {
-        player->propriete[0] = new;
-        player->nbpropriete = 1;
-        player->propriete[0].id = player->nbpropriete + player->nbroute;
-        player->propriete[0].reel = 1;
-        shesh = player->nbpropriete + player->nbroute;
-        player->propriete[0].marqueur = timer;
-        printf("[[%d", player->propriete[0].id);
-    } else if (player->propriete[0].prix == 1000) {
-        for (int i = 0; i < 30; i++) {
-            if (player->propriete[i].prix != 1000) {  // condition verifiant si la propriete existe deja
-
-                player->nbpropriete += 1;
-
-                player->propriete[i].reel = 1;
-                player->propriete[i] = new;
-                player->propriete[i].id = player->nbpropriete + player->nbroute;
-                shesh = player->propriete[i].id;
-                player->propriete[i].marqueur = timer;
-                i = 32;
-            }
+    printf("%d", player->propriete[0].prix);
+    for (int i = 0; i < 30; i++) {
+        if (player->propriete[i].prix != 1000 && player->propriete[i].prix != 100000) {  // condition verifiant si la propriete existe deja
+            player->nbpropriete += 1;
+            player->propriete[i] = new;
+            player->propriete[i].reel = 1;
+            player->propriete[i].id = player->nbpropriete + player->nbroute;
+            shesh = player->propriete[i].id;
+            player->propriete[i].marqueur = timer;
+            i = 32;
         }
     }
     for (int i = 0; i < 3; i++) {
@@ -1101,12 +1069,12 @@ int defiler(FileM *file) {
 t_graphe *init_graphe(t_graphe *g, t_joueur *player) {
     int ordre = 1000;
     g = CreerGraphe(ordre);  // créer le graphe d'ordre sommets
-    g->ordre = player->nbpropriete + player->nbroute;
+    g->ordre = 0;
     g->matricepoids = (int **)malloc(45 * sizeof(int *));
     for (int i = 0; i < 45; i++) {
         g->matricepoids[i] = (int *)malloc(45 * sizeof(int));
         for (int j = 0; j < 45; j++) {
-            g->matricepoids[i][j] = 0;
+            g->matricepoids[i][j] = 99;
             //printf("%d", g->matricepoids[i][j]);
         }
     }
@@ -1120,6 +1088,7 @@ pSommet *CreerArete(pSommet *sommet, int s1, int s2, int poids, int **matricepoi
         Newarc->poids = poids;
         printf("\n%d-%d\n", s1, s2);
         matricepoids[s1][s2] = matricepoids[s2][s1] = poids;
+        printf("Matrice poids v1 : %d ; matrice poids v2 : %d", matricepoids[s1][s2], matricepoids[s2][s1]);
         Newarc->arc_suivant = NULL;
         sommet[s1]->arc = Newarc;
         return sommet;
@@ -1156,7 +1125,7 @@ t_graphe *CreerGraphe(int ordre) {
 
     for (int i = 0; i < ordre; i++) {
         Newgraphe->pSommet[i] = (pSommet)malloc(sizeof(struct Sommet));
-        Newgraphe->pSommet[i]->valeur = i;
+        //Newgraphe->pSommet[i]->valeur = i;
         Newgraphe->pSommet[i]->arc = NULL;
     }
     return Newgraphe;
