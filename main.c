@@ -277,6 +277,7 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
     int minutes = 0;
     int secondes = 0;
     int condi = 0, condi2 = 0, condi3 = 0, condi4 = 0;
+    int niveau = 0;
 
     int marqueur1 = timer;
     int marqueur2 = timer;
@@ -284,7 +285,7 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
     LOCK_FUNCTION(incrementer_timer);
     LOCK_VARIABLE(timer);
     install_int_ex(incrementer_timer, MSEC_TO_TIMER(1));
-
+    
     while (!key[KEY_ESC]) {
         clear_bitmap(detection);
         clear(page);
@@ -293,6 +294,10 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
         rectfill(detection, 24, 390, 101, 467, makecol(252, 0, 0));  // caserne
         rectfill(detection, 24, 484, 101, 561, makecol(251, 0, 0));  // centrale
         rectfill(detection, 24, 108, 101, 185, makecol(250, 0, 0));  // panel route
+
+        rectfill(detection, 6, 727, 41, 762, makecol(250, 1, 0));    // 0
+        rectfill(detection, 44, 727, 79, 762, makecol(250, 2, 0));   // 1
+        rectfill(detection, 82, 727, 117, 762, makecol(250, 3, 0));  // 2
 
         int couleurpixel;
         blit(map, page, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
@@ -309,6 +314,15 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
 
         if (mouse_b == 2) {
             couleurpixel = getpixel(detection, mouse_x, mouse_y);
+            if (getr(couleurpixel) == 250 && getg(couleurpixel) == 1 && getb(couleurpixel) == 0) {  // Clique niveau 0
+                niveau = 0;
+            }
+            if (getr(couleurpixel) == 250 && getg(couleurpixel) == 2 && getb(couleurpixel) == 0) {  // Clique niveau 0
+                niveau = 1;
+            }
+            if (getr(couleurpixel) == 250 && getg(couleurpixel) == 3 && getb(couleurpixel) == 0) {  // Clique niveau 0
+                niveau = 2;
+            }
             if (getr(couleurpixel) == 254 && getg(couleurpixel) == 0 && getb(couleurpixel) == 0) {
                 if (player->argent > batiment[0].prix) {
                     while (condi == 0) {
@@ -395,13 +409,36 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
             secondes = 0;
             minutes += 1;
         }
-        for (int z = 0; z < player->nbroute; z++) {
-            draw_sprite(page, player->bitume[z].truc, player->bitume[z].x, player->bitume[z].y);
+        if (niveau == 0) {
+            for (int z = 0; z < player->nbroute; z++) {
+                draw_sprite(page, player->bitume[z].truc, player->bitume[z].x, player->bitume[z].y);
+            }
+            for (int z = 0; z < player->nbpropriete; z++){
+                draw_sprite(page, player->propriete[z].icone, player->propriete[z].x1, player->propriete[z].y1);
+            }
+            textprintf_centre_ex(page, font, 500, 300, makecol(255, 255, 255), -1, "%d - %d", case_actu.x1, case_actu.y1);
+            blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        } else if (niveau == 1) {
+            for (int z = 0; z < player->nbroute; z++) {
+                rectfill(page, player->bitume[z].x, player->bitume[z].y, player->bitume[z].x + 20, player->bitume[z].y + 20, makecol(0, 0, 255));
+            }
+            for (int z = 0; z < player->nbpropriete; z++) {
+                if (player->propriete[z].chateau == 1) {
+                    draw_sprite(page, player->propriete[z].icone, player->propriete[z].x1, player->propriete[z].y1);
+                }
+            }
+            blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        } else if (niveau == 2) {
+            for (int z = 0; z < player->nbroute; z++) {
+                rectfill(page, player->bitume[z].x, player->bitume[z].y, player->bitume[z].x + 20, player->bitume[z].y + 20, makecol(0, 255, 255));
+            }
+            for (int z = 0; z < player->nbpropriete; z++) {
+                if (player->propriete[z].centrale == 1) {
+                    draw_sprite(page, player->propriete[z].icone, player->propriete[z].x1, player->propriete[z].y1);
+                }
+            }
+            blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
         }
-        for (int z = 0; z < player->nbpropriete; z++)
-            draw_sprite(page, player->propriete[z].icone, player->propriete[z].x1, player->propriete[z].y1);
-        textprintf_centre_ex(page, font, 500, 300, makecol(255, 255, 255), -1, "%d - %d", case_actu.x1, case_actu.y1);
-        blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
         int **distance_chateau;
         distance_chateau = (int **)malloc((player->nbpropriete + player->nbroute) * sizeof(int *));
@@ -442,12 +479,14 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
         for (int i = 0; i < home; i++) {
             for (int j = 0; j < castle; j++) {
                 printf("IDDD maison :%d /// IDDD chateau : %d",maisons[i].id, chateau[j].id);
-                printf("\nORDRE : %d\n", player->nbpropriete + player->nbroute);
-
+                printf("\nORDRE : %d\n", player->nbpropriete + player->nbroute + 1);
+                
                 //distance_chateau[i][j] = alimentation(player, g, maisons[i].id, chateau[j].id);
                 distance_chateau[i][j] = algoDijkstra(g->matricepoids, maisons[i].id, chateau[j].id, player->nbpropriete + player->nbroute + 1);
                 
-                printf("Distance chateau %d - %d : %d\n", i, j, distance_chateau[i][j]);
+                printf("Distance chateau %d - %d : %d\n", maisons[i].id, chateau[j].id, distance_chateau[i][j]);
+                if(distance_chateau[maisons[i].id][j] != 0)
+                    alimentation(player, g, maisons[i], chateau, distance_chateau, i, castle);
                 // distance_chateau[i][j] = algoDijkstra(g->ordre, maisons[i].id, chateau[j].id);
             }
         }
@@ -485,14 +524,14 @@ int algoDijkstra(int** matrice,int debut,int fin, int ordre)
     marque[debut] = 1;
     cout[debut] = 0;
 
-    printf("marque[fin] = %d", marque[fin]);
+    //printf("marque[fin] = %d", marque[fin]);
     while(marque[fin] == 0) // tant qu'on n'a pas explore le sommet de fin
     {
         min = 99; // cout minimal = infini
         for(int i=0;i< ordre;i++) // parcours de tous les sommets
         {
             d = cout[debut] + matrice[debut][i]; // cout actuel = cout jusqu'a present + cout vers sommet i
-            printf("MATRICE [%d] [%d] : %d\n", debut, i, matrice[debut][i]);
+            //printf("MATRICE [%d] [%d] : %d\n", debut, i, matrice[debut][i]);
             if(d<cout[i] && marque[i]==0) // si cout actuel < cout vers sommet i et si sommet i n'est pas explore
             {
                 cout[i] = d; // cout vers sommet i = cout actuel
@@ -503,6 +542,9 @@ int algoDijkstra(int** matrice,int debut,int fin, int ordre)
                 min = cout[i]; // cout minimal = cout vers sommet i
                 m = i; // sommet suivant = sommet i
             }
+            if(i == ordre-1 && min == 99){
+                return 0;
+            }
         }
         debut = m; // on passe au sommet suivant
         marque[debut] = 1; // le sommet suivant est explore
@@ -512,7 +554,7 @@ int algoDijkstra(int** matrice,int debut,int fin, int ordre)
     while(debut != -1) // tant qu'il reste au moins un predecesseur
     {
         chemin[j] = debut; // on ajoute le sommet parcouru au chemin
-        printf("preds[debut] = %d\n", preds[debut]);
+        //printf("preds[debut] = %d\n", preds[debut]);
         debut = preds[debut]; // on passe au sommet precedent
         j+=1;
     }
@@ -530,74 +572,44 @@ int algoDijkstra(int** matrice,int debut,int fin, int ordre)
     return cout[fin]; // on retourne le cout du chemin
 }
 
-int alimentation(t_joueur *player, t_graphe *g, int debut, int fin) {
-    int taille = player->nbroute + player->nbpropriete;
-    int *select = (int)malloc(taille * sizeof(int));
-    for (int k = 0; k < taille; k++) {
-        select[k] = 0;
+int alimentation(t_joueur *player, t_graphe *g, t_bat maison, t_bat* chateau, int** distance_chateau, int i, int castle) {
+    int a, j, tmp;
+ 
+    for (a=0 ; a < castle-1; a++)
+    {
+        for (j=0 ; j < castle-a-1; j++)
+        {
+        if (distance_chateau[i][j] > distance_chateau[i][j+1]) 
+        {
+            tmp = distance_chateau[i][j];
+            distance_chateau[i][j] = distance_chateau[i][j+1];
+            distance_chateau[i][j+1] = tmp;
+        }
+        }
+    } 
+    
+    for (a=0; a < castle; ++a)
+   {
+      printf("distance chateau %d : %d\n", a, distance_chateau[i][a]);
+   }
+
+   /*
+    int j_min = 0;
+    for(int j=0; j<castle; j++){
+        if(dist_min > distance_chateau[i][j]){
+            dist_min = distance_chateau[i][j];
+            j_min = j;
+        }
     }
     
-    int distance[taille], prev[taille], i, m, minimum, start, d, j = 0;
-    int chemin[taille];  /// initialisation des différentes variables
-    for (i = 0; i < taille; i++) {
-        distance[i] = 99;  // Simulation de l infini
-        prev[i] = -1;
-    }
-    start = debut;
-    select[start] = 1;
-    distance[start] = 0;
-    printf("START: %d[[[",start);
-    while (select[fin] == 0) {
-         // Tant que le sommet de fin n'est pas marqué on effectue la boucle
-        minimum = 1000;
-        m = 0;
-        for (i = 1; i < taille; i++) {
-            //printf("MATRICE:%d/%d :%d",start,fin,g->matricepoids[start][fin]);
-            if(start!=i ){
-            d = distance[start] + g->matricepoids[start][i];
-            printf("\nSTART: %d \t I: %d \t g->matricepoids: %d\n",start,i,g->matricepoids[start][i]);
-            //printf("\nDISTANCE: I : %d\n d: %d",distance[i],d);    /// on additionne les poids de chaque arrete au fur et a mesure du parcours
-            if (d < distance[i] && select[i] == 0 && d != 0) {  /// Si le poids est inferieur au poids de ref(99) on associe les grandeurs
-                distance[i] = d;
-                prev[i] = start;
-                
-            }
-            
+    for(int k=0; k<player->nbpropriete + player->nbroute; k++){
+        if(player->propriete[k].id == player->propriete[chateau[j_min].id]){
+            if(player->propriete[k].capacite >= maison.habitant)
+                player->propriete[k].capacite -= maison.habitant
+            else
 
-            if (minimum > distance[i] && select[i] == 0 && d != 0) {  /// si le minimum est superieur alors on prend ce chemin et on redefinit le minimum
-                minimum = distance[i];
-                m = i;  /// On choisit alors ce chemin puis on l'assigne cid essous à start pour marquer le bon sommet.
-            }
-        }
-        
-        
-        
-        start = m;
-        select[start] = 1;
-        
-        
-        
-        }
-
-    }
-
-    while (start != -1) {
-        chemin[j] = start;
-       
-        start = prev[start];  /// Tant que on est pas arrive au sommet original on continue de remplir le tableau.
-        j++;
-    }
-
-    printf("\n\nLe chemin le plus court pour aller du sommet %d au sommet %d est : \n", debut, fin);
-    for (i = j - 1; i >= 0; i--) {
-        printf("%d", chemin[i]);  /// affichage du chemin
-        if (i != 0) {
-            printf("<--");
-        }
-    }
-    printf("\n");
-    free(select);
-    return distance[fin];
+        }   
+    }*/
 }
 
 void afficher_successeurs(pSommet *sommet, int num) {

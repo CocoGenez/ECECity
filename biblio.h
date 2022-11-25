@@ -9,6 +9,7 @@ typedef struct eau{
 
     int x1, x2, y1, y2;
     int capacite;
+    int id;
     int prix;
     struct eau* next;
     BITMAP* iconeeau;
@@ -53,6 +54,7 @@ typedef struct batiment{
     int chateau;
     int centrale;
     int capacite;
+    t_eau chateauAlimentant[5];
     struct eau water;
     struct electricite elec;
     struct route road;
