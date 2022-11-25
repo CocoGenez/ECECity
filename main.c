@@ -918,6 +918,7 @@ int evolution_batiment(t_joueur *player, t_bat *batiment, int *condition)
             player->nbhabitant += batiment[player->propriete[z].niveau + 1].habitant - batiment[player->propriete[z].niveau].habitant;
             player->propriete[z].niveau += 1;
             player->propriete[z].marqueur = timer;
+            //if(player->propriete[z].niveau > 1) a rajouter si loyer commence apres terrain vague
             player->argent = player->argent + player->propriete[z].habitant * 10;
             condition[z] = 1;
             return 1;
