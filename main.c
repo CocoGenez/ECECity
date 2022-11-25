@@ -491,35 +491,210 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
             secondes = 0;
             minutes += 1;
         }
-        for (int z = 0; z < player->nbroute; z++)
-        {
+        
+        printf("Niveau : %d\n", niveau);
+        if (niveau == 0) {
+            for (int z = 0; z < player->nbroute; z++) {
+                draw_sprite(page, player->bitume[z].truc, player->bitume[z].x, player->bitume[z].y);
+            }
+            for (int z = 0; z < player->nbpropriete; z++)
+                draw_sprite(page, player->propriete[z].icone, player->propriete[z].x1, player->propriete[z].y1);
+            textprintf_centre_ex(page, font, 500, 300, makecol(255, 255, 255), -1, "%d - %d", case_actu.x1, case_actu.y1);
+            blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        } else if (niveau == 1) {
+            for (int z = 0; z < player->nbroute; z++) {
+                rectfill(page, player->bitume[z].x, player->bitume[z].y, player->bitume[z].x + 20, player->bitume[z].y + 20, makecol(0, 0, 255));
+            }
+            for (int z = 0; z < player->nbpropriete; z++) {
+                if (player->propriete[z].chateau == 1) {
+                    draw_sprite(page, player->propriete[z].icone, player->propriete[z].x1, player->propriete[z].y1);
+                }
+            }
+            blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        } else if (niveau == 2) {
+            for (int z = 0; z < player->nbroute; z++) {
+                rectfill(page, player->bitume[z].x, player->bitume[z].y, player->bitume[z].x + 20, player->bitume[z].y + 20, makecol(0, 255, 255));
+            }
+            for (int z = 0; z < player->nbpropriete; z++) {
+                if (player->propriete[z].centrale == 1) {
+                    draw_sprite(page, player->propriete[z].icone, player->propriete[z].x1, player->propriete[z].y1);
+                }
+            }
+            blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        }
+        /*
+        int **distance_chateau;
+        distance_chateau = (int **)malloc(player->nbpropriete + player->nbroute * sizeof(int *));
+        for (int i = 0; i < player->nbpropriete + player->nbroute; i++) {
+            distance_chateau[i] = (int *)malloc(sizeof(int));
+        }
+        t_bat *maisons;
+        int home = 0;
+        maisons = (t_bat *)malloc((player->nbpropriete + player->nbroute) * sizeof(t_bat));
+        for (int i = 0; i < player->nbpropriete + player->nbroute; i++) {
+            if (player->propriete[i].chateau == 0 && player->propriete[i].centrale == 0 && player->propriete[i].reel == 1) {
+                maisons[home] = player->propriete[i];
+                home += 1;
+            }
+        }
 
-            draw_sprite(page, player->bitume[z].truc, player->bitume[z].x, player->bitume[z].y);
+        t_bat *chateau;
+        int castle = 0;
+        chateau = (t_bat *)malloc((player->nbpropriete + player->nbroute) * sizeof(t_bat));
+        for (int i = 0; i < player->nbpropriete + player->nbroute; i++) {
+            if (player->propriete[i].chateau == 1 && player->propriete[i].centrale == 0) {
+                chateau[castle] = player->propriete[i];
+                castle += 1;
+            }
         }
-        for (int z = 0; z < player->nbpropriete; z++)
-            draw_sprite(page, player->propriete[z].icone, player->propriete[z].x1, player->propriete[z].y1);
-        textprintf_centre_ex(page, font, 500, 300, makecol(255, 255, 255), -1, "%d - %d", case_actu.x1, case_actu.y1);
-        blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-        for (int i=1; i<player->nbpropriete+player->nbroute+1; i++)
-    {
-        afficher_successeurs(g->pSommet, i);
-        //printf("\n");
-    }
-    
-    for(int z=0;z<player->nbpropriete;z++){
-        if(g->pSommet[z]->arc!=NULL ||g->pSommet[g->pSommet[z]->arc->sommet]->arc!=NULL){
-        if(player->propriete[z].reel==1){
-            prev=bfs(g,player->propriete[z].id,player) ;
-            affichage_bfs_chateau(g,prev,player);
+
+        t_bat *centrale;
+        int electric = 0;
+        centrale = (t_bat *)malloc((player->nbpropriete + player->nbroute) * sizeof(t_bat));
+        for (int i = 0; i < player->nbpropriete + player->nbroute; i++) {
+            if (player->propriete[i].chateau == 0 && player->propriete[i].centrale == 1) {
+                centrale[electric] = player->propriete[i];
+                electric += 1;
+            }
         }
+        printf("\nNb chateau : %d / Nb centrale : %d / Nb maison : %d", castle, electric, home);
+        for (int i = 0; i < home; i++) {
+            for (int j = 0; j < castle; j++) {
+                printf("IDDD:%d",maisons[i].id);
+                distance_chateau[i][j] = alimentation(player, g, maisons[i].id, chateau[j].id);
+
+                printf("Distance chateau i j : %d\n", distance_chateau[i][j]);
+                // distance_chateau[i][j] = algoDijkstra(g->ordre, maisons[i].id, chateau[j].id);
+            }
         }
-    }
-    
+
+        for (int i = 1; i < player->nbpropriete + player->nbroute; i++) {
+            // afficher_successeurs(g->pSommet, i);
+            // printf("\n");
+        }
+        for(int i=0;i<10;i++){
+            for(int j=0;j<10;j++){
+               // printf("%d\t",g->matricepoids[i][j]);
+            }
+            //printf("\n");
+        }
     }
     /*for (int i = 0; i < 35; i++)
         free(plateau[i]);
     free(plateau);*/
-}
+    }
+int algoDijkstra(int source, int target, int ordre) {
+        int m, min, debut, d, j;
+        int dist[ordre], prev[ordre];
+        int chemin[ordre];
+        int choisi[ordre];
+        for (int i = 0; i < ordre; i++) {
+            choisi[i] = 0;
+        }
+        for (int i = 0; i < ordre; i++) {
+            dist[i] = 99;
+            prev[i] = -1;
+        }
+        debut = source;
+        choisi[debut] = 1;
+        dist[debut] = 0;
+        while (choisi[target] == 0) {
+            min = 99;
+            m = 0;
+            for (int i = 0; i < ordre; i++) {
+                d = dist[debut] + 1;
+                if (d < dist[i] && choisi[i] == 0) {
+                    dist[i] = d;
+                    prev[i] = debut;
+                }
+                if (min > dist[i] && choisi[i] == 0) {
+                    min = dist[i];
+                    m = i;
+                }
+            }
+            debut = m;
+            choisi[debut] = 1;
+        }
+        debut = target;
+        j = 0;
+        while (debut != -1) {
+            chemin[j] = debut;
+            debut = prev[debut];
+            j += 1;
+        }
+
+        printf("\n");
+        for (int i = j - 1; i >= 0; i--) {
+            if (i == 0) {
+                printf("%d", chemin[i]);
+            } else {
+                printf("%d <-- ", chemin[i]);
+            }
+        }
+        return dist[target];
+    }
+
+    int alimentation(t_joueur * player, t_graphe * g, int debut, int fin) {
+        int taille = player->nbroute + player->nbpropriete;
+        int *select = (int)malloc(taille * sizeof(int));
+        for (int k = 0; k < taille; k++) {
+            select[k] = 0;
+        }
+
+        int distance[taille], prev[taille], i, m, minimum, start, d, j = 0;
+        int chemin[taille];  /// initialisation des différentes variables
+        for (i = 0; i < taille; i++) {
+            distance[i] = 99;  // Simulation de l infini
+            prev[i] = -1;
+        }
+        start = debut;
+        select[start] = 1;
+        distance[start] = 0;
+        printf("START: %d[[[", start);
+        while (select[fin] == 0) {
+            // Tant que le sommet de fin n'est pas marqué on effectue la boucle
+            minimum = 1000;
+            m = 0;
+            for (i = 1; i < taille; i++) {
+                // printf("MATRICE:%d/%d :%d",start,fin,g->matricepoids[start][fin]);
+                if (start != i) {
+                    d = distance[start] + g->matricepoids[start][i];
+                    printf("\nSTART: %d \t I: %d \t g->matricepoids: %d\n", start, i, g->matricepoids[start][i]);
+                    // printf("\nDISTANCE: I : %d\n d: %d",distance[i],d);    /// on additionne les poids de chaque arrete au fur et a mesure du parcours
+                    if (d < distance[i] && select[i] == 0 && d != 0) {  /// Si le poids est inferieur au poids de ref(99) on associe les grandeurs
+                        distance[i] = d;
+                        prev[i] = start;
+                    }
+
+                    if (minimum > distance[i] && select[i] == 0 && d != 0) {  /// si le minimum est superieur alors on prend ce chemin et on redefinit le minimum
+                        minimum = distance[i];
+                        m = i;  /// On choisit alors ce chemin puis on l'assigne cid essous à start pour marquer le bon sommet.
+                    }
+                }
+
+                start = m;
+                select[start] = 1;
+            }
+        }
+
+        while (start != -1) {
+            chemin[j] = start;
+
+            start = prev[start];  /// Tant que on est pas arrive au sommet original on continue de remplir le tableau.
+            j++;
+        }
+
+        printf("\n\nLe chemin le plus court pour aller du sommet %d au sommet %d est : \n", debut, fin);
+        for (i = j - 1; i >= 0; i--) {
+            printf("%d", chemin[i]);  /// affichage du chemin
+            if (i != 0) {
+                printf("<--");
+            }
+        }
+        printf("\n");
+        free(select);
+        return distance[fin];
+    }
 void afficher_successeurs(pSommet* sommet, int num){
     printf(" sommet %d :\n", num);
 
