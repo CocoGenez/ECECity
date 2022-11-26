@@ -48,17 +48,19 @@ typedef struct batiment{
     int prix;
     int habitant;
     int id;
-    int reel;
+    int reel; // pour dire si c'est une construction
     char nom[20];
     BITMAP* icone;
-    int chateau;
-    int centrale;
-    int capacite;
+    int chateau; // pour dire si c'est chateau
+    int centrale; // pour dire si c'est une centrale
+    int capacite; // capacité du batiment
     t_eau chateauAlimentant[5];
     struct eau water;
     struct electricite elec;
     struct route road;
-
+    int alimEau; //alimentation en eau du batiment
+    int alimElec; //alimentation en elec du batiment
+    int position; // position du chateau pour alimentation
 }t_bat;
 
 
@@ -123,4 +125,5 @@ t_graphe* CreerGraphe(int ordre);
 pSommet* CreerArete(pSommet* sommet,int s1,int s2,int poids,int** matrice);
 int* bfs(t_graphe* graphe, int s,t_joueur* player);
 void affichage_bfs_chateau(t_graphe* graphe, int* pred,t_joueur* player);
+t_bat alimentation(t_joueur *player, t_graphe *g, t_bat maison, t_bat* chateau, int** distance_chateau, int i, int castle);
 #endif // BIBLIO_H_INCLUDED

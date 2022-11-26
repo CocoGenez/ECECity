@@ -279,6 +279,10 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
     int condi = 0, condi2 = 0, condi3 = 0, condi4 = 0;
     int niveau = 0;
 
+    int electric = 0;
+    int castle = 0;
+    int home = 0;
+
     int marqueur1 = timer;
     int marqueur2 = timer;
     int trucpourrouler;
@@ -446,7 +450,7 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
             distance_chateau[i] = (int *)malloc(sizeof(int));
         }
         t_bat *maisons;
-        int home = 0;
+        home = 0;
         maisons = (t_bat *)malloc((player->nbpropriete + player->nbroute) * sizeof(t_bat));
         for (int i = 0; i < player->nbpropriete + player->nbroute; i++) {
             if (player->propriete[i].chateau == 0 && player->propriete[i].centrale == 0 && player->propriete[i].reel == 1) {
@@ -456,7 +460,7 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
         }
 
         t_bat *chateau;
-        int castle = 0;
+        castle = 0;
         chateau = (t_bat *)malloc((player->nbpropriete + player->nbroute) * sizeof(t_bat));
         for (int i = 0; i < player->nbpropriete + player->nbroute; i++) {
             if (player->propriete[i].chateau == 1 && player->propriete[i].centrale == 0) {
@@ -466,7 +470,7 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
         }
 
         t_bat *centrale;
-        int electric = 0;
+        electric = 0;
         centrale = (t_bat *)malloc((player->nbpropriete + player->nbroute) * sizeof(t_bat));
         for (int i = 0; i < player->nbpropriete + player->nbroute; i++) {
             if (player->propriete[i].chateau == 0 && player->propriete[i].centrale == 1) {
@@ -485,10 +489,10 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                 distance_chateau[i][j] = algoDijkstra(g->matricepoids, maisons[i].id, chateau[j].id, player->nbpropriete + player->nbroute + 1);
                 
                 printf("Distance chateau %d - %d : %d\n", maisons[i].id, chateau[j].id, distance_chateau[i][j]);
-                if(distance_chateau[maisons[i].id][j] != 0)
-                    alimentation(player, g, maisons[i], chateau, distance_chateau, i, castle);
-                // distance_chateau[i][j] = algoDijkstra(g->ordre, maisons[i].id, chateau[j].id);
+                //if(distance_chateau[maisons[i].id][j] != 0)
             }
+            maisons[i] = alimentation(player, g, maisons[i], chateau, distance_chateau, i, castle);
+            printf("//// MAISON %d : alimentation = %d\n", i, maisons[i].alimEau);
         }
         for (int i = 1; i < player->nbpropriete + player->nbroute + 1; i++) {
             //afficher_successeurs(g->pSommet, i);
@@ -543,7 +547,7 @@ int algoDijkstra(int** matrice,int debut,int fin, int ordre)
                 m = i; // sommet suivant = sommet i
             }
             if(i == ordre-1 && min == 99){
-                return 0;
+                return 99;
             }
         }
         debut = m; // on passe au sommet suivant
@@ -572,14 +576,15 @@ int algoDijkstra(int** matrice,int debut,int fin, int ordre)
     return cout[fin]; // on retourne le cout du chemin
 }
 
-int alimentation(t_joueur *player, t_graphe *g, t_bat maison, t_bat* chateau, int** distance_chateau, int i, int castle) {
+t_bat alimentation(t_joueur *player, t_graphe *g, t_bat maison, t_bat* chateau, int** distance_chateau, int i, int castle) {
     int a, j, tmp;
+    int cpt_chateau;
  
-    for (a=0 ; a < castle-1; a++)
+    for (a=0 ; a < castle; a++)
     {
-        for (j=0 ; j < castle-a-1; j++)
+        for (j=0 ; j < castle-a; j++)
         {
-        if (distance_chateau[i][j] > distance_chateau[i][j+1]) 
+        if (distance_chateau[i][j] > distance_chateau[i][j+1] && distance_chateau[i][j+1] > 0 && distance_chateau[i][j+1] < 1000) 
         {
             tmp = distance_chateau[i][j];
             distance_chateau[i][j] = distance_chateau[i][j+1];
@@ -588,28 +593,33 @@ int alimentation(t_joueur *player, t_graphe *g, t_bat maison, t_bat* chateau, in
         }
     } 
     
-    for (a=0; a < castle; ++a)
-   {
-      printf("distance chateau %d : %d\n", a, distance_chateau[i][a]);
-   }
-
-   /*
-    int j_min = 0;
-    for(int j=0; j<castle; j++){
-        if(dist_min > distance_chateau[i][j]){
-            dist_min = distance_chateau[i][j];
-            j_min = j;
+    for (a=0; a < castle; ++a){
+        if(distance_chateau[i][a] != 99){
+            cpt_chateau += 1;
         }
-    }
+   }
     
-    for(int k=0; k<player->nbpropriete + player->nbroute; k++){
-        if(player->propriete[k].id == player->propriete[chateau[j_min].id]){
-            if(player->propriete[k].capacite >= maison.habitant)
-                player->propriete[k].capacite -= maison.habitant
-            else
-
-        }   
-    }*/
+    for(int k=0; k<cpt_chateau; k++){
+        printf("\nCAPACITE = %d\n", player->propriete[chateau[k].id].capacite);
+        if(player->propriete[chateau[k].id].capacite - (maison.habitant - maison.alimEau) >= 0){
+            if(maison.alimEau + player->propriete[chateau[k].id].capacite <= maison.habitant){
+                maison.alimEau += player->propriete[chateau[k].id].capacite;
+                player->propriete[chateau[k].id].capacite -= maison.habitant;
+            }
+            else{
+                player->propriete[chateau[k].id].capacite -= maison.habitant - maison.alimEau;
+                maison.alimEau += maison.habitant - maison.alimEau;
+            }
+        }
+        else 
+        {
+            if(player->propriete[chateau[k].id].capacite >= 0){
+                maison.alimEau += player->propriete[chateau[k].id].capacite;
+                player->propriete[chateau[k].id].capacite -= maison.habitant;
+            }
+        } 
+    }
+    return maison;
 }
 
 void afficher_successeurs(pSommet *sommet, int num) {
