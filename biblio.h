@@ -126,4 +126,5 @@ pSommet* CreerArete(pSommet* sommet,int s1,int s2,int poids,int** matrice);
 int* bfs(t_graphe* graphe, int s,t_joueur* player);
 void affichage_bfs_chateau(t_graphe* graphe, int* pred,t_joueur* player);
 t_bat alimentation(t_joueur *player, t_graphe *g, t_bat maison, t_bat* chateau, int** distance_chateau, int i, int castle);
+t_bat alimentation_centrale(t_joueur *player, t_graphe *g, t_bat maison, t_bat *centrale, int **distance_centrale, int i, int elec);
 #endif // BIBLIO_H_INCLUDED
