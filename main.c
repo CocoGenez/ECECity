@@ -168,6 +168,10 @@ t_case detecterCase(t_case **plateau, BITMAP *page, BITMAP *batiment, BITMAP *ma
     int casechoisie_x = 0;
     int casechoisie_y = 0;
     while (casechoisie_x == 0) {
+        if(key[KEY_SPACE]){
+            casecliquee.x1 = 99009;
+            return casecliquee;
+        }
         blit(map, page, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
         draw_sprite(page, batiment, mouse_x, mouse_y);
         for (int z = 0; z < player->nbroute; z++) {
@@ -189,7 +193,6 @@ t_case detecterCase(t_case **plateau, BITMAP *page, BITMAP *batiment, BITMAP *ma
             }
         }
     }
-    // blit(pagetemp, decor, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 }
 
 void initcase(t_case **plateau) {
@@ -246,6 +249,9 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
 
     t_case case_actu;
     t_case **plateau;
+    t_bat *centrale;
+    t_bat *chateau;
+    t_bat *maisons;
     int **matriceJeu;
     int *prev;
     prev = (int *)malloc(200 * sizeof(int));
@@ -383,10 +389,11 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                             break;
                         case_actu.x1 = 0;
 
-                        case_actu = detecterCase(plateau, page, reseau->chaussee->iconeroute[trucpourrouler], map, player);
-
-                        if (verifOccupation(matriceJeu, case_actu, 3) == 1) {
-                            creation_route(player, case_actu, batiment, reseau, trucpourrouler, matriceJeu, g);
+                        while (case_actu.x1 != 99009){
+                            case_actu = detecterCase(plateau, page, reseau->chaussee->iconeroute[trucpourrouler], map, player);
+                            if (verifOccupation(matriceJeu, case_actu, 3) == 1) {
+                                creation_route(player, case_actu, batiment, reseau, trucpourrouler, matriceJeu, g);
+                            }
                         }
                     }
                 } else {
@@ -395,20 +402,11 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
             }
         }
         evolution_batiment(player, batiment, condition);
-        /*
-        if (timer >= 60000)
-        {
-
-            timer = 0;
-            marqueur = timer;
-            minutes += 1;
-        }*/
         if (timer - marqueur1 >= 1000) {
             marqueur1 = timer;
             secondes += 1;
         }
         if (timer - marqueur2 >= 60000) {
-            // timer = 0;
             marqueur2 = timer;
             secondes = 0;
             minutes += 1;
@@ -449,18 +447,16 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
         for (int i = 0; i < (player->nbpropriete + player->nbroute); i++) {
             distance_chateau[i] = (int *)malloc(sizeof(int));
         }
-        t_bat *maisons;
+
         home = 0;
         maisons = (t_bat *)malloc((player->nbpropriete + player->nbroute) * sizeof(t_bat));
         for (int i = 0; i < player->nbpropriete + player->nbroute; i++) {
             if (player->propriete[i].chateau == 0 && player->propriete[i].centrale == 0 && player->propriete[i].reel == 1) {
                 maisons[home] = player->propriete[i];
-                maisons[home].alimEau = 0;
                 home += 1;
             }
         }
 
-        t_bat *chateau;
         castle = 0;
         chateau = (t_bat *)malloc((player->nbpropriete + player->nbroute) * sizeof(t_bat));
         for (int i = 0; i < player->nbpropriete + player->nbroute; i++) {
@@ -470,7 +466,6 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
             }
         }
 
-        t_bat *centrale;
         electric = 0;
         centrale = (t_bat *)malloc((player->nbpropriete + player->nbroute) * sizeof(t_bat));
         for (int i = 0; i < player->nbpropriete + player->nbroute; i++) {
@@ -479,35 +474,21 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                 electric += 1;
             }
         }
-        // printf("\nNb chateau : %d / Nb centrale : %d / Nb maison : %d", castle, electric, home);
 
         for (int i = 0; i < home; i++) {
             for (int j = 0; j < castle; j++) {
-                printf("IDDD maison :%d /// IDDD chateau : %d", maisons[i].id, chateau[j].id);
-                printf("\nORDRE : %d\n", player->nbpropriete + player->nbroute + 1);
-
-                // distance_chateau[i][j] = alimentation(player, g, maisons[i].id, chateau[j].id);
-
                 distance_chateau[i][j] = algoDijkstra(g->matricepoids, maisons[i].id, chateau[j].id, player->nbpropriete + player->nbroute + 1);
-
-                printf("Distance chateau %d - %d : %d\n", maisons[i].id, chateau[j].id, distance_chateau[i][j]);
-                // if(distance_chateau[maisons[i].id][j] != 0)
+                //printf("Distance chateau %d - %d : %d\n", maisons[i].id, chateau[j].id, distance_chateau[i][j]);
             }
-            printf("\nAlim eau : %d et nb habitant : %d", player->propriete[maisons[i].id - 1].alimEau, player->propriete[maisons[i].id - 1].habitant);
-            if (player->propriete[maisons[i].id - 1].alimEau < player->propriete[maisons[i].id - 1].habitant) {
+            printf("\nAlim eau : %d et nb habitant : %d", player->propriete[maisons[i].position].alimEau, player->propriete[maisons[i].position].habitant);
+            if (player->propriete[maisons[i].position].alimEau < player->propriete[maisons[i].position].habitant) {
                 maisons[i] = alimentation(player, g, maisons[i], chateau, distance_chateau, i, castle);
-                player->propriete[maisons[i].id - 1].alimEau = maisons[i].alimEau;
+                player->propriete[maisons[i].position].alimEau = maisons[i].alimEau;
             }
             printf("//// MAISON %d : alimentation = %d\n", i, maisons[i].alimEau);
         }
         for (int i = 1; i < player->nbpropriete + player->nbroute + 1; i++) {
             // afficher_successeurs(g->pSommet, i);
-            // printf("\n");
-        }
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                // printf("%d\t",g->matricepoids[i][j]);
-            }
             // printf("\n");
         }
     }
@@ -568,6 +549,7 @@ int algoDijkstra(int **matrice, int debut, int fin, int ordre) {
     }
 
     // affichage du chemin
+    /*
     printf("\n");
     for (int i = j - 1; i >= 0; i--) {
         if (i == 0) {
@@ -575,19 +557,26 @@ int algoDijkstra(int **matrice, int debut, int fin, int ordre) {
         } else {
             printf("%d <-- ", chemin[i]);
         }
-    }
+    }*/
     return cout[fin];  // on retourne le cout du chemin
 }
 
 t_bat alimentation(t_joueur *player, t_graphe *g, t_bat maison, t_bat *chateau, int **distance_chateau, int i, int castle) {
-    int a, j, tmp;
-    int cpt_chateau;
+    int a, j, tmp, tmp2;
+    int cpt_chateau = 0;
+    int tab_indices[castle]; // tableau des indices des chateaux
+    for(int b=0; b<castle; b++){
+        tab_indices[b] = b;
+    }
     for (a = 0; a < castle; a++) {
         for (j = 0; j < castle - a; j++) {
             if (distance_chateau[i][j] > distance_chateau[i][j + 1] && distance_chateau[i][j + 1] > 0 && distance_chateau[i][j + 1] < 1000) {
                 tmp = distance_chateau[i][j];
                 distance_chateau[i][j] = distance_chateau[i][j + 1];
                 distance_chateau[i][j + 1] = tmp;
+                tmp2 = tab_indices[j];
+                tab_indices[j] = tab_indices[j+1];
+                tab_indices[j+1] = tmp2;
             }
         }
     }
@@ -595,27 +584,29 @@ t_bat alimentation(t_joueur *player, t_graphe *g, t_bat maison, t_bat *chateau, 
     for (a = 0; a < castle; ++a) {
         if (distance_chateau[i][a] != 99) {
             cpt_chateau += 1;
+            //printf("DISTANCE LA PLUS COURTE EST A INDICE %d\n", tab_indices[a]);
         }
     }
 
     for (int k = 0; k < cpt_chateau; k++) {
-        printf("ID chateau k : %d\n", chateau[k].id);
-        if (player->propriete[chateau[k].id - 1].capacite - (maison.habitant - maison.alimEau) >= 0) {
-            if (maison.alimEau + player->propriete[chateau[k].id - 1].capacite <= maison.habitant) {
-                maison.alimEau += player->propriete[chateau[k].id - 1].capacite;
-                player->propriete[chateau[k].id - 1].capacite -= (maison.habitant - maison.alimEau);
+        if (player->propriete[chateau[tab_indices[k]].position].capacite - (maison.habitant - maison.alimEau) >= 0) {
+            if (maison.alimEau + player->propriete[chateau[tab_indices[k]].position].capacite <= maison.habitant) {
+                maison.alimEau += player->propriete[chateau[tab_indices[k]].position].capacite;
+                player->propriete[chateau[tab_indices[k]].position].capacite -= maison.habitant;
+                player->propriete[chateau[tab_indices[k]].position].capacite += maison.alimEau;
             } else {
-                player->propriete[chateau[k].id - 1].capacite -= (maison.habitant - maison.alimEau);
-                maison.alimEau += (maison.habitant - maison.alimEau);
+                player->propriete[chateau[tab_indices[k]].position].capacite -= maison.habitant;
+                player->propriete[chateau[tab_indices[k]].position].capacite += maison.alimEau;
+                maison.alimEau = maison.habitant;
             }
         } else {
-            if (player->propriete[chateau[k].id - 1].capacite >= 0) {
-                maison.alimEau += player->propriete[chateau[k].id - 1].capacite;
-                player->propriete[chateau[k].id - 1].capacite -= maison.habitant;
+            if (player->propriete[chateau[tab_indices[k]].position].capacite >= 0) {
+                maison.alimEau += player->propriete[chateau[tab_indices[k]].position].capacite;
+                player->propriete[chateau[tab_indices[k]].position].capacite = 0;
             }
         }
+        printf("\nCAPACITE chateau %d = %d\n", chateau[k].id, player->propriete[chateau[k].position].capacite);
     }
-    printf("\nCAPACITE = %d\n", player->propriete[chateau[0].id - 1].capacite);
     return maison;
 }
 
@@ -862,6 +853,7 @@ int creation_chateau(t_joueur *player, t_case case_actu, t_bat *batiment, t_grap
             player->propriete[i] = new;
             player->propriete[i].reel = 1;
             player->propriete[i].id = player->nbpropriete + player->nbroute;
+            player->propriete[i].position = i;
             shesh = player->propriete[i].id;
             i = 32;
         }
@@ -982,6 +974,7 @@ int creation_batiment(t_joueur *player, t_case case_actu, t_bat *batiment, int *
             player->propriete[i] = new;
             player->propriete[i].reel = 1;
             player->propriete[i].alimEau = 0;
+            player->propriete[i].position = i;
             player->propriete[i].id = player->nbpropriete + player->nbroute;
             shesh = player->propriete[i].id;
             player->propriete[i].marqueur = timer;
@@ -1093,10 +1086,10 @@ t_graphe *init_graphe(t_graphe *g, t_joueur *player) {
     int ordre = 1000;
     g = CreerGraphe(ordre);  // créer le graphe d'ordre sommets
     g->ordre = 0;
-    g->matricepoids = (int **)malloc(45 * sizeof(int *));
-    for (int i = 0; i < 45; i++) {
-        g->matricepoids[i] = (int *)malloc(45 * sizeof(int));
-        for (int j = 0; j < 45; j++) {
+    g->matricepoids = (int **)malloc(ordre * sizeof(int *));
+    for (int i = 0; i < ordre; i++) {
+        g->matricepoids[i] = (int *)malloc(ordre * sizeof(int));
+        for (int j = 0; j < ordre; j++) {
             g->matricepoids[i][j] = 99;
             // printf("%d", g->matricepoids[i][j]);
         }
