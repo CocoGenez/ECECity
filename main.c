@@ -185,7 +185,7 @@ t_case detecterCase(t_case **plateau, BITMAP *page, BITMAP *batiment, BITMAP *ma
         if (mouse_b == 1) {
             xsouris = (mouse_x) / 20;
             ysouris = (mouse_y) / 20;
-            if (xsouris <= 50 && xsouris >= 6 && ysouris <= 34 && ysouris >= 0) {
+            if (xsouris <= 50 && xsouris >= 5 && ysouris <= 34 && ysouris >= 0) {
                 casechoisie_x = xsouris - 6;
                 casechoisie_y = ysouris;
                 casecliquee = plateau[casechoisie_y][casechoisie_x];
@@ -214,6 +214,9 @@ void initcase(t_case **plateau) {
 }
 
 int verifOccupation(int **matrice, t_case caseactu, int mode) {
+    if(caseactu.x1 == 984 || caseactu.x1 == 1004 || caseactu.y1 == 660 ||caseactu.y1 == 680){
+        return 0;
+    }
     if (mode == 1) {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -223,7 +226,7 @@ int verifOccupation(int **matrice, t_case caseactu, int mode) {
                 caseactu.x1 += 20;
             }
             caseactu.y1 += 20;
-            caseactu.x1 -= 80;
+            caseactu.x1 -= 60;
         }
     } else if (mode == 2) {
         for (int i = 0; i < 6; i++) {
@@ -339,7 +342,7 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                         case_actu.x1 = 0;
                         case_actu = detecterCase(plateau, page, batiment[0].icone, map, player);
                         // creation_batiment(player, case_actu, batiment,matriceJeu);
-                        if (case_actu.x1 != 0)
+                        if (case_actu.x1 != 0 && case_actu.x1 != 99009)
                             condi = 1;
                     }
                     if (verifOccupation(matriceJeu, case_actu, 1) == 1) {
@@ -355,7 +358,7 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                         case_actu.x1 = 0;
                         case_actu = detecterCase(plateau, page, batiment->water.iconeeau, map, player);
                         // creation_chateau(player, case_actu, batiment, reseau,matriceJeu);
-                        if (case_actu.x1 != 0)
+                        if (case_actu.x1 != 0 && case_actu.x1 != 99009)
                             condi2 = 1;
                     }
                     if (verifOccupation(matriceJeu, case_actu, 2) == 1) {
@@ -371,7 +374,7 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
                         case_actu.x1 = 0;
                         case_actu = detecterCase(plateau, page, batiment->elec.iconeelec, map, player);
                         // creation_centrale(player, case_actu, batiment, reseau,matriceJeu);
-                        if (case_actu.x1 != 0)
+                        if (case_actu.x1 != 0 && case_actu.x1 != 99009)
                             condi3 = 1;
                     }
                     if (verifOccupation(matriceJeu, case_actu, 2) == 1) {
@@ -910,48 +913,60 @@ int creation_centrale(t_joueur *player, t_case case_actu, t_bat *batiment, t_gra
 }
 
 int check_connexion(t_case case_actu, int **matrice, int mode, t_graphe *g) {
-    for (int i = 0; i < 3; i++) {
-        printf("Cote haut : %d %d\n", (case_actu.y1 - 20) / 20, (case_actu.x1 - 124) / 20);
-        if (matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20] != 0) {
-            printf("TOUCHEEEE(1)");
-            g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20], matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20], 1, g->matricepoids);
-            g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20], matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20], 1, g->matricepoids);
+    printf("CASE ACTU X1 : %d / Y1 : %d\n", case_actu.x1, case_actu.y1);
+    if(case_actu.y1 != 0){
+        for (int i = 0; i < 3; i++) {
+            if (matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20] != 0) {
+                printf("TOUCHEEEE(1)");
+                g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20], matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20], 1, g->matricepoids);
+                g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20], matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20], 1, g->matricepoids);
+            }
+            case_actu.x1 += 20;
         }
-        case_actu.x1 += 20;
+        case_actu.x1-=60;
     }
 
-    for (int j = 0; j < 3; j++) {
-        printf("Cote droit : %d %d\n", (case_actu.y1) / 20, (case_actu.x1 - 124) / 20);
-        if (matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20] != 0) {
-            printf("TOUCHEEEEE(2)");
-            g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20], matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20], 1, g->matricepoids);
-            g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20], matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20], 1, g->matricepoids);
+    if(case_actu.x1 != 964){
+        case_actu.x1+=60;
+        for (int j = 0; j < 3; j++) {
+            if (matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20] != 0 && case_actu.x1 ) {
+                printf("TOUCHEEEEE(2)");
+                g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20], matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20], 1, g->matricepoids);
+                g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1) / 20][(case_actu.x1 - 124) / 20], matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20], 1, g->matricepoids);
+            }
+            case_actu.y1 += 20;
         }
-        case_actu.y1 += 20;
+        case_actu.y1 -= 60;
     }
 
-    for (int j = 0; j < 3; j++) {
-        printf("Cote bas : %d %d\n", (case_actu.y1) / 20, (case_actu.x1 - 20 - 124) / 20);
-        if (matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20] != 0) {
-            printf("TOUCHEEEEE(3)");
-            g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 20 - 124) / 20], matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20], 1, g->matricepoids);
-            g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20], matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 20 - 124) / 20], 1, g->matricepoids);
+    if(case_actu.y1 != 640){
+        case_actu.y1 += 60;
+        for (int j = 0; j < 3; j++) {
+            if (matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20] != 0) {
+                printf("TOUCHEEEEE(3)");
+                g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 20 - 124) / 20], matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20], 1, g->matricepoids);
+                g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1) / 20][(case_actu.x1 - 20 - 124) / 20], matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 20 - 124) / 20], 1, g->matricepoids);
+            }
+            case_actu.x1 -= 20;
         }
-        case_actu.x1 -= 20;
+        case_actu.x1 += 60;
     }
-
-    for (int j = 0; j < 3; j++) {
-        printf("Cote gauche : %d %d\n", (case_actu.y1 - 20) / 20, (case_actu.x1 - 20 - 124) / 20);
-        if (matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 20 - 124) / 20] != 0) {
-            printf("TOUCHEEEEE(4)");
-            g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20], matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 20 - 124) / 20], 1, g->matricepoids);
-            g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 20 - 124) / 20], matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20], 1, g->matricepoids);
+    
+    if(case_actu.x1 != 0){
+        case_actu.x1 -= 60;
+        for (int j = 0; j < 3; j++) {
+            if (matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 20 - 124) / 20] != 0) {
+                printf("TOUCHEEEEE(4)");
+                g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20], matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 20 - 124) / 20], 1, g->matricepoids);
+                g->pSommet = CreerArete(g->pSommet, matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 20 - 124) / 20], matrice[(case_actu.y1 - 20) / 20][(case_actu.x1 - 124) / 20], 1, g->matricepoids);
+            }
+            case_actu.y1 -= 20;
         }
-        case_actu.y1 -= 20;
+        case_actu.y1 += 60;
     }
 }
 
-int creation_batiment(t_joueur *player, t_case case_actu, t_bat *batiment, int **matrice, t_graphe *g) {
+void creation_batiment(t_joueur *player, t_case case_actu, t_bat *batiment, int **matrice, t_graphe *g) {
     player->argent -= 1000;
     int shesh;
     t_bat new;
@@ -981,6 +996,7 @@ int creation_batiment(t_joueur *player, t_case case_actu, t_bat *batiment, int *
             i = 32;
         }
     }
+    // on met les cases de la matrice à id du batiment
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             matrice[(case_actu.y1 / 20)][(case_actu.x1 - 124) / 20] = shesh;
@@ -1102,9 +1118,9 @@ pSommet *CreerArete(pSommet *sommet, int s1, int s2, int poids, int **matricepoi
         pArc Newarc = (pArc)malloc(sizeof(struct Arc));
         Newarc->sommet = s2;
         Newarc->poids = poids;
-        printf("\n%d-%d\n", s1, s2);
+        //printf("\n%d-%d\n", s1, s2);
         matricepoids[s1][s2] = matricepoids[s2][s1] = poids;
-        printf("Matrice poids v1 : %d ; matrice poids v2 : %d", matricepoids[s1][s2], matricepoids[s2][s1]);
+        //printf("Matrice poids v1 : %d ; matrice poids v2 : %d", matricepoids[s1][s2], matricepoids[s2][s1]);
         Newarc->arc_suivant = NULL;
         sommet[s1]->arc = Newarc;
         return sommet;
