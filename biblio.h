@@ -34,6 +34,8 @@ typedef struct route{
     BITMAP** iconeroute;
     BITMAP* truc;
     int id;
+    int alimente;
+    int alimenteau;
 
 }t_route;
 
@@ -107,24 +109,13 @@ typedef struct joueur{
 typedef struct pol{
     int x1,x2,y1,y2;
 }t_case;
-typedef struct maillon{
-    //numéro du sommet
-    int num;
-    //pointeur sur la maillon suivant
-    struct maillon*suiv;
-}Maillon;
-
-//structure regroupant les ancres de tete et de fin de liste
-typedef struct file{
-    Maillon*tete; //pointeur sur le premier maillon
-    Maillon*fin; //pointeur sur le dernier maillon
-}FileM;
 
 
-t_graphe* CreerGraphe(int ordre);
+t_graphe *init_graphe(t_graphe *g, t_joueur *player);
+t_graphe *CreerGraphe(int ordre);
 pSommet* CreerArete(pSommet* sommet,int s1,int s2,int poids,int** matrice);
-int* bfs(t_graphe* graphe, int s,t_joueur* player);
 void affichage_bfs_chateau(t_graphe* graphe, int* pred,t_joueur* player);
 t_bat alimentation(t_joueur *player, t_graphe *g, t_bat maison, t_bat* chateau, int** distance_chateau, int i, int castle);
 t_bat alimentation_centrale(t_joueur *player, t_graphe *g, t_bat maison, t_bat *centrale, int **distance_centrale, int i, int elec);
+t_case detecterCase(t_case **plateau, BITMAP *page, BITMAP *batiment, BITMAP *map, t_joueur *player);
 #endif // BIBLIO_H_INCLUDED
