@@ -1,0 +1,30 @@
+# depslib dependency file v1.0
+1667207133 source:c:\users\alexa\documents\codeblocks\youo\main.c
+	"stdio.h"
+	"stdlib.h"
+	"allegro.h"
+	"biblio.h"
+
+1667206397 c:\users\alexa\documents\codeblocks\youo\biblio.h
+
+1669580116 source:c:\users\oscar\onedrive\bureau\youo\main.c
+	"biblio.h"
+
+1669579931 c:\users\oscar\onedrive\bureau\youo\biblio.h
+	"stdio.h"
+	"stdlib.h"
+	<allegro.h>
+	<string.h>
+
+1669577944 source:c:\users\oscar\onedrive\bureau\youo\initialisation.c
+	"biblio.h"
+
+1669579663 source:c:\users\oscar\onedrive\bureau\youo\affichage.c
+	"biblio.h"
+
+1669569789 source:c:\users\oscar\onedrive\bureau\youo\sauvegarde.c
+	"biblio.h"
+
+1669579663 source:c:\users\oscar\onedrive\bureau\youo\sous-prog.c
+	"biblio.h"
+
