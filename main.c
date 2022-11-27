@@ -274,6 +274,10 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
     player->argent = 500000;
     player->nbhabitant = 0;
     BITMAP *panel;
+    BITMAP* canalisation;
+    BITMAP* filelectric;
+    canalisation=load_bitmap("canalisation.bmp",NULL);
+    filelectric=load_bitmap("alim_electrique.bmp",NULL);
     panel = load_bitmap("images_structure/panel/route_panel.bmp", NULL);
     if (!panel) {
         allegro_message("Erreur image Accueil");
@@ -315,7 +319,7 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
         textprintf_centre_ex(page, font, 960, 726, makecol(0, 0, 0), -1, "%d", secondes);
         textprintf_centre_ex(page, font, 750, 726, makecol(0, 0, 0), -1, "%d ECEflouz", player->argent);
         textprintf_centre_ex(page, font, 250, 726, makecol(0, 0, 0), -1, "%d", player->nbhabitant);
-        textprintf_centre_ex(page, font, 100, 500, makecol(255, 255, 255), -1, "souris : %d %d", mouse_x, mouse_y);
+        //textprintf_centre_ex(page, font, 100, 500, makecol(255, 255, 255), -1, "souris : %d %d", mouse_x, mouse_y);
         int condition[30] = {0};
         condi = 0;
         condi2 = 0;
@@ -411,6 +415,22 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
             secondes = 0;
             minutes += 1;
         }
+        castle = 0;
+        chateau = (t_bat *)malloc((player->nbpropriete + player->nbroute) * sizeof(t_bat));
+        for (int i = 0; i < player->nbpropriete + player->nbroute; i++) {
+            if (player->propriete[i].chateau == 1 && player->propriete[i].centrale == 0) {
+                chateau[castle] = player->propriete[i];
+                castle += 1;
+            }
+        }
+        electric = 0;
+        centrale = (t_bat *)malloc((player->nbpropriete + player->nbroute) * sizeof(t_bat));
+        for (int i = 0; i < player->nbpropriete + player->nbroute; i++) {
+            if (player->propriete[i].chateau == 0 && player->propriete[i].centrale == 1) {
+                centrale[electric] = player->propriete[i];
+                electric += 1;
+            }
+        }
         if (niveau == 0) {
             for (int z = 0; z < player->nbroute; z++) {
                 draw_sprite(page, player->bitume[z].truc, player->bitume[z].x, player->bitume[z].y);
@@ -418,25 +438,44 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
             for (int z = 0; z < player->nbpropriete; z++) {
                 draw_sprite(page, player->propriete[z].icone, player->propriete[z].x1, player->propriete[z].y1);
             }
-            textprintf_centre_ex(page, font, 500, 300, makecol(255, 255, 255), -1, "%d - %d", case_actu.x1, case_actu.y1);
+            //textprintf_centre_ex(page, font, 500, 300, makecol(255, 255, 255), -1, "%d - %d", case_actu.x1, case_actu.y1);
             blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
         } else if (niveau == 1) {
             for (int z = 0; z < player->nbroute; z++) {
-                rectfill(page, player->bitume[z].x, player->bitume[z].y, player->bitume[z].x + 20, player->bitume[z].y + 20, makecol(0, 0, 255));
+                //rectfill(page, player->bitume[z].x, player->bitume[z].y, player->bitume[z].x + 20, player->bitume[z].y + 20, makecol(0, 0, 255));
+                draw_sprite(page,canalisation,player->bitume[z].x, player->bitume[z].y);
             }
             for (int z = 0; z < player->nbpropriete; z++) {
                 if (player->propriete[z].chateau == 1) {
+                    //draw_sprite(page, chateau[z].icone, chateau[z].x1, chateau[z].y1);
+                    //textprintf_ex(page,font,chateau[z].x2-30,chateau[z].y2+100,makecol(255, 255, 255), -1,"%d / %d",chateau[z].capacite,5000);
                     draw_sprite(page, player->propriete[z].icone, player->propriete[z].x1, player->propriete[z].y1);
+                    textprintf_ex(page,font,player->propriete[z].x2-30,player->propriete[z].y2+100,makecol(255, 255, 255), -1,"%d / %d",player->propriete[z].capacite,5000);
+                
+                }
+                if(player->propriete[z].alimEau>0){
+                    
+                    draw_sprite(page, player->propriete[z].icone, player->propriete[z].x1, player->propriete[z].y1);
+                    textprintf_centre_ex(page,font,player->propriete[z].x1+10,player->propriete[z].y2+10,makecol(255, 255, 255), -1,"%d / %d",player->propriete[z].alimEau,player->propriete[z].habitant);
                 }
             }
             blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
         } else if (niveau == 2) {
             for (int z = 0; z < player->nbroute; z++) {
-                rectfill(page, player->bitume[z].x, player->bitume[z].y, player->bitume[z].x + 20, player->bitume[z].y + 20, makecol(0, 255, 255));
+                //rectfill(page, player->bitume[z].x, player->bitume[z].y, player->bitume[z].x + 20, player->bitume[z].y + 20, makecol(0, 255, 255));
+                draw_sprite(page,filelectric,player->bitume[z].x, player->bitume[z].y);
             }
             for (int z = 0; z < player->nbpropriete; z++) {
                 if (player->propriete[z].centrale == 1) {
                     draw_sprite(page, player->propriete[z].icone, player->propriete[z].x1, player->propriete[z].y1);
+                    textprintf_ex(page,font,player->propriete[z].x2-30,player->propriete[z].y2+100,makecol(255, 255, 255), -1,"%d / %d",player->propriete[z].capacite,5000);
+                
+                
+                }
+                if(player->propriete[z].alimElec>0){
+                    draw_sprite(page, player->propriete[z].icone, player->propriete[z].x1, player->propriete[z].y1);
+                    
+                    textprintf_centre_ex(page,font,player->propriete[z].x1+10,player->propriete[z].y2+10,makecol(255, 255, 255), -1,"%d / %d",player->propriete[z].alimElec,player->propriete[z].habitant);
                 }
             }
             blit(page, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
@@ -446,6 +485,11 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
         distance_chateau = (int **)malloc((player->nbpropriete + player->nbroute) * sizeof(int *));
         for (int i = 0; i < (player->nbpropriete + player->nbroute); i++) {
             distance_chateau[i] = (int *)malloc(sizeof(int));
+        }
+        int ** distance_centrale;
+        distance_centrale = (int **)malloc((player->nbpropriete + player->nbroute) * sizeof(int *));
+        for (int i = 0; i < (player->nbpropriete + player->nbroute); i++) {
+             distance_centrale[i] = (int *)malloc(sizeof(int));
         }
 
         home = 0;
@@ -457,26 +501,13 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
             }
         }
 
-        castle = 0;
-        chateau = (t_bat *)malloc((player->nbpropriete + player->nbroute) * sizeof(t_bat));
-        for (int i = 0; i < player->nbpropriete + player->nbroute; i++) {
-            if (player->propriete[i].chateau == 1 && player->propriete[i].centrale == 0) {
-                chateau[castle] = player->propriete[i];
-                castle += 1;
-            }
-        }
+        
 
-        electric = 0;
-        centrale = (t_bat *)malloc((player->nbpropriete + player->nbroute) * sizeof(t_bat));
-        for (int i = 0; i < player->nbpropriete + player->nbroute; i++) {
-            if (player->propriete[i].chateau == 0 && player->propriete[i].centrale == 1) {
-                centrale[electric] = player->propriete[i];
-                electric += 1;
-            }
-        }
+        
 
         for (int i = 0; i < home; i++) {
             for (int j = 0; j < castle; j++) {
+                 
                 distance_chateau[i][j] = algoDijkstra(g->matricepoids, maisons[i].id, chateau[j].id, player->nbpropriete + player->nbroute + 1);
                 //printf("Distance chateau %d - %d : %d\n", maisons[i].id, chateau[j].id, distance_chateau[i][j]);
             }
@@ -487,7 +518,20 @@ void mode_capitaliste(BITMAP *page, BITMAP *detection, t_bat *batiment, t_joueur
             }
             printf("//// MAISON %d : alimentation = %d\n", i, maisons[i].alimEau);
         }
-        for (int i = 1; i < player->nbpropriete + player->nbroute + 1; i++) {
+        for (int i = 0; i < home; i++) {
+            for (int j = 0; j < electric; j++) {
+                distance_centrale[i][j]=algoDijkstra(g->matricepoids,maisons[i].id,centrale[j].id,player->nbpropriete+player->nbroute+1);
+                //printf("Distance chateau %d - %d : %d\n", maisons[i].id, chateau[j].id, distance_chateau[i][j]);
+            }
+            printf("\nAlim elec : %d et nb habitant : %d ", player->propriete[maisons[i].position].alimElec, player->propriete[maisons[i].position].habitant);
+            if (player->propriete[maisons[i].position].alimElec < player->propriete[maisons[i].position].habitant) {
+                maisons[i] = alimentation_centrale(player, g, maisons[i], centrale, distance_centrale, i, electric);
+                player->propriete[maisons[i].position].alimElec = maisons[i].alimElec;
+            }
+            printf("////ELEC MAISON %d : alimentation = %d\n", i, player->propriete[maisons[i].position].alimElec);
+        }
+        for (int i = 0; i < castle; i++) {
+            printf("capa chateau: %d\n",chateau[i].capacite);
             // afficher_successeurs(g->pSommet, i);
             // printf("\n");
         }
@@ -589,7 +633,7 @@ t_bat alimentation(t_joueur *player, t_graphe *g, t_bat maison, t_bat *chateau, 
     }
 
     for (int k = 0; k < cpt_chateau; k++) {
-        if (player->propriete[chateau[tab_indices[k]].position].capacite - (maison.habitant - maison.alimEau) >= 0) {
+        if (player->propriete[chateau[tab_indices[k]].position].capacite - (maison.habitant - maison.alimEau) > 0) {
             if (maison.alimEau + player->propriete[chateau[tab_indices[k]].position].capacite <= maison.habitant) {
                 maison.alimEau += player->propriete[chateau[tab_indices[k]].position].capacite;
                 player->propriete[chateau[tab_indices[k]].position].capacite -= maison.habitant;
@@ -606,6 +650,56 @@ t_bat alimentation(t_joueur *player, t_graphe *g, t_bat maison, t_bat *chateau, 
             }
         }
         printf("\nCAPACITE chateau %d = %d\n", chateau[k].id, player->propriete[chateau[k].position].capacite);
+    }
+    return maison;
+}
+t_bat alimentation_centrale(t_joueur *player, t_graphe *g, t_bat maison, t_bat *centrale, int **distance_centrale, int i, int elec) {
+    int a, j, tmp, tmp2;
+    int cpt_centrale = 0;
+    int tab_indices[elec]; // tableau des indices des chateaux
+    for(int b=0; b<elec; b++){
+        tab_indices[b] = b;
+    }
+    for (a = 0; a < elec; a++) {
+        for (j = 0; j < elec - a; j++) {
+            if (distance_centrale[i][j] > distance_centrale[i][j + 1] && distance_centrale[i][j + 1] > 0 && distance_centrale[i][j + 1] < 1000) {
+                tmp = distance_centrale[i][j];
+                distance_centrale[i][j] = distance_centrale[i][j + 1];
+                distance_centrale[i][j + 1] = tmp;
+                tmp2 = tab_indices[j];
+                tab_indices[j] = tab_indices[j+1];
+                tab_indices[j+1] = tmp2;
+            }
+        }
+    }
+
+    for (a = 0; a < elec; ++a) {
+        if (distance_centrale[i][a] != 99) {
+            cpt_centrale += 1;
+            //printf("DISTANCE LA PLUS COURTE EST A INDICE %d\n", tab_indices[a]);
+        }
+    }
+
+    for (int k = 0; k < cpt_centrale; k++) {
+        /*if (player->propriete[centrale[tab_indices[k]].position].capacite - (maison.habitant - maison.alimElec) >= 0) {
+            if (maison.alimElec + player->propriete[centrale[tab_indices[k]].position].capacite <= maison.habitant) {
+                maison.alimElec += player->propriete[centrale[tab_indices[k]].position].capacite;
+                player->propriete[centrale[tab_indices[k]].position].capacite -= maison.habitant;
+                player->propriete[centrale[tab_indices[k]].position].capacite += maison.alimElec;
+            } else {
+                
+            }
+        } */
+        if(player->propriete[centrale[tab_indices[k]].position].capacite >=maison.habitant-maison.alimElec && maison.alimElec!=maison.habitant){
+            //maison.alimElec += player->propriete[centrale[tab_indices[k]].position].capacite;
+            
+            player->propriete[centrale[tab_indices[k]].position].capacite -= maison.habitant;
+                player->propriete[centrale[tab_indices[k]].position].capacite += maison.alimElec;
+                maison.alimElec = maison.habitant;
+            
+        }
+        
+        printf("\nCAPACITE centrale %d = %d\n", centrale[k].id, player->propriete[centrale[k].position].capacite);
     }
     return maison;
 }
@@ -852,6 +946,8 @@ int creation_chateau(t_joueur *player, t_case case_actu, t_bat *batiment, t_grap
 
             player->propriete[i] = new;
             player->propriete[i].reel = 1;
+            player->propriete[i].alimEau = -1;
+            player->propriete[i].alimElec = -1;
             player->propriete[i].id = player->nbpropriete + player->nbroute;
             player->propriete[i].position = i;
             shesh = player->propriete[i].id;
@@ -888,9 +984,13 @@ int creation_centrale(t_joueur *player, t_case case_actu, t_bat *batiment, t_gra
     for (int i = 0; i < 30; i++) {
         if (player->propriete[i].prix != 1000 && player->propriete[i].prix != 100000) {  // condition verifiant si la propriete existe deja
             player->nbpropriete += 1;
-            player->propriete[i].reel = 1;
+            
             player->propriete[i] = new;
+            player->propriete[i].reel = 1;
+            player->propriete[i].alimEau = -1;
+            player->propriete[i].alimElec = -1;
             player->propriete[i].id = player->nbpropriete + player->nbroute;
+            player->propriete[i].position = i;
             shesh = player->propriete[i].id;
             i = 32;
         }
@@ -974,6 +1074,7 @@ int creation_batiment(t_joueur *player, t_case case_actu, t_bat *batiment, int *
             player->propriete[i] = new;
             player->propriete[i].reel = 1;
             player->propriete[i].alimEau = 0;
+            player->propriete[i].alimElec = 0;
             player->propriete[i].position = i;
             player->propriete[i].id = player->nbpropriete + player->nbroute;
             shesh = player->propriete[i].id;
