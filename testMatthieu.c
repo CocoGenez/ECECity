@@ -106,6 +106,7 @@ void mode_capitaliste() {
     int marqueur1 = timer;
     int marqueur2 = timer;
     int trucpourrouler;
+    FONT *arial_rounded = load_font("polices/arial_rounded.pcx", NULL, NULL);
     LOCK_FUNCTION(incrementer_timer);
     LOCK_VARIABLE(timer);
     install_int_ex(incrementer_timer, MSEC_TO_TIMER(1));
@@ -134,12 +135,11 @@ void mode_capitaliste() {
             }
         }
         blit(map, page, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-        textprintf_centre_ex(page, font, 930, 726, makecol(0, 0, 0), -1, "%d :", minutes);
-        textprintf_centre_ex(page, font, 960, 726, makecol(0, 0, 0), -1, "%d", secondes);
-        textprintf_centre_ex(page, font, 750, 726, makecol(0, 0, 0), -1, "%d ECEflouz", player->argent);
-        textprintf_right_ex(page, font, 407, 725, makecol(30, 66, 120), -1, "%d", capaciteEauTot);
-        textprintf_right_ex(page, font, 555, 725, makecol(30, 66, 120), -1, "%d", capaciteElecTot);
-        textprintf_centre_ex(page, font, 250, 726, makecol(0, 0, 0), -1, "%d", player->nbhabitant);
+        textprintf_right_ex(page, arial_rounded, 259, 725, makecol(30, 66, 120), -1, "%d", player->nbhabitant);
+        textprintf_right_ex(page, arial_rounded, 407, 725, makecol(30, 66, 120), -1, "%d", capaciteEauTot);
+        textprintf_right_ex(page, arial_rounded, 555, 725, makecol(30, 66, 120), -1, "%d", capaciteElecTot);
+        textprintf_right_ex(page, arial_rounded, 809, 721, makecol(30, 66, 120), -1, "%d", player->argent);
+        textprintf_right_ex(page, arial_rounded, 986, 721, makecol(30, 66, 120), -1, "%d : %d", minutes, secondes);
         //textprintf_centre_ex(page, font, 100, 500, makecol(255, 255, 255), -1, "souris : %d %d", mouse_x, mouse_y);
         int condition[100] = {0};
         condi = 0;
